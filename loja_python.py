@@ -1,182 +1,125 @@
-<<<<<<< HEAD
+
 import pandas as pd
 import os as os
-import openpyxl as op
+from datetime import datetime as data
 
-#Menu Inicial------------------------------------------------
-def opcoes():
-    print('Escolha uma opção: ')
-    print('1 - Cadastrar Produto ')
-    print('2 - Verificar Estoque')
-    print('3 - Sair')
-
-#Cadastrar Produtos------------------------------------------------
-def cadastrar():
-    while True:
-        nome = input('Nome do produto: ')
-        tamanho = input('Tamanho: ')
-        sexo = input('Sexo: ')
-        precocompra = input('Preço de Compra unitário:')
-        precovenda = input('Preço de Venda unitario: ')
-        print('Confira as informações:')
-        print(f"Nome: {nome} | Tamanho: {tamanho} | Sexo: {sexo}")
-        print(f"Preço de compra unitario: {precocompra} | Preço de venda unitario: {precovenda}")
-        infocorreta = input('\n(As informações estão corretas? (S-Sim / N-Não): ')
-        infocorreta = infocorreta.upper()
-        if infocorreta == 'S' :
-            return True
-        elif infocorreta == 'N':
-             while True:
-                opcao = input('Deseja reiniciar o cadastro? (S-Sim / N-Não): ')
-                opcao = opcao.upper()
-                if opcao == 'S':
-                    print('Reiniciando cadastro..')
-                    break
-                elif opcao == 'N':
-                    return False
-        else:
-            print('Opção invalida!')
-
-
-#Ler_compras---------------------------------------------
+nomearq = "Compras.xlsx"
+Hoje = data.now()
+#LerArquivo---------------------------------------------
 def ler():
-    nomearq = "Compras.xlsx"
     if os.path.exists(nomearq):
-        comp = pd.read_excel(nomearq)
         print("Arquivo encontrado")
-        comp.head()
+        return True
+    else:
+        print("Arquivo não encontrado!")
+        return False
+
+
+#LerCaixaDiario---------------------------------------
+def Caixa():
+     try:
+        print('Verificando caixa diario...')
+        caixa = pd.read_excel(nomearq, sheet_name='Caixa')
+        caixa.columns = caixa.columns.str.strip()
+        return caixa
+     except:
+        print('Caixa não encontrado')
+
+#LerComprasDiarias------------------------------------------ 
+def Comprasdiarias():
+    Estoqueanalise =  Estoque()
+    Comprastotal = comprascalc()
+    try:
+        caixa = Caixa()
+
+        if caixa is None:
+         print("Caixa inválido")
+         return
+        
+        comprasday =  caixa[caixa["Operação"] == "Compra"]
+
+        for _, linha in comprasday.iterrows():
+            produto = linha["Nome do produto"]
+            Tamanho = linha["Tamanho"]
+            qntd = linha["Quantidade"]
+            condicao = (
+                (Estoqueanalise["Nome do produto"] == produto) &
+                (Estoqueanalise["Tamanho"] == Tamanho) 
+            )
+
+            if condicao.any():
+                Estoqueanalise.loc[condicao, "Quantidade"] += qntd
+                print(f"Produto encontrado no estoque: {produto} - {Tamanho}")
+            else:
+                print(f"Produto não encontrado no estoque: {produto} - {Tamanho}")
+
+            if condicao.any():
+                Comprastotal.loc[condicao, "Quantidade"] += qntd
+                Comprastotal.loc[condicao, "Data da Ultima compra"] = Hoje
+                print(f"Produto encontrado nas compras: {produto} - {Tamanho}")
+            else:
+                print(f"Produto não encontrado na aba de compras: {produto} - {Tamanho}")
+
+            abas = {"Caixa": pd.read_excel(nomearq, "Caixa"),
+                    "Compras": pd.read_excel(nomearq, "Compras"),
+                    "Vendas": pd.read_excel(nomearq, "Vendas"),
+                    "Estoque": Estoqueanalise}
+           
+
+            with pd.ExcelWriter(nomearq, engine="openpyxl") as writer:
+                    for nome, df in abas.items():      
+                        df.to_excel(writer, sheet_name=nome, index=False)
+    except Exception as e:
+        print('Compras diarias não encontradas')
+        print("Erro", e)
+
+#LerVendasDiaria--------------------------------------------
+def Vendasdiarias(caixa):
+     try:    
+        vendasday = caixa[caixa["Operação"] == "Venda"]
+        return vendasday
+     except:
+        print('Vendas diarias não encontrads')
+
+#LerEstoque-------------------------------------------------
+def Estoque():
+     try:
+        estoque = pd.read_excel(nomearq, sheet_name="Estoque")
+        estoque.columns = estoque.columns.str.strip()
+        print('Estoque encontrado')
+        return estoque
+     except:
+         print('Estoque não encontrado')
+
+
+
+#ComprasTotal-------------------------------------------
+def comprascalc():
+    try:
+        comp = pd.read_excel(nomearq, sheet_name='Compras')
+        comp.columns = comp.columns.str.strip()
+        comp["Compra Total"] = (comp["Preço de Compra Unitário"] * comp["Quantidade"])
+        comp["Venda Total estimada"] = (comp["Preço de Venda Unitário"] * comp["Quantidade"])
+        comp["Lucro total estimado"] = (comp["Venda Total estimada"] - comp["Compra Total"])
         print(comp)
-    while True:
-        print('Insira uma opção: \n 1 - Verificar Produtos Masculinos \n 2 - Verificar produtos Femininos\n 3 - Voltar')
-        opcaoest = input("Qual opçaõ voce deseja? ")
-        if opcaoest == '1':
-            print ('Os produtos masculinos são...')
-            if  voltar ():
-                return True
-        elif opcaoest == '2':
-            print ('Os produtos masculinos são...')
-            if  voltar ():
-                return True
-        elif opcaoest == '3':
-            print('Retornando a tela inicial..')        
-            if voltar():
-                return True
-        else:
-            print ("Opção invalida!")
-            continue
-    else:
-        print("Arquivo não encontrado!")
-
-#Voltar para inicio-----------------------
-def voltar():
-    while True:
-        opcaovolt = input('Deseja voltar a tela inicial? (S- Sim / N - Não?)')
-        opcaovolt = opcaovolt.upper()
-        if opcaovolt == 'S':
-            return True
-        elif opcaovolt == 'N':
-            return False
-        else:   
-            print('Opção Invalida')
-            
-            
-#Principal------------------------------------------------
-
-while True:
-        opcoes()
-        opcao = int(input('Insira uma opção:'))
-        if opcao == 1:
-                print('Voce selecionou a opção 1')
-                verificacao = cadastrar()
-                if verificacao == True:
-                    print('Produto cadastrado com sucesso!')
-                else:
-                    print('Cadastro cancelado!')
-                    continue             
-        elif opcao == 2:
-            print('Voce selecionou a opcao 2')
-            ler()
-     
-        elif opcao == 3:
-            print('Fim!')
-            break
-        else:
-            print('Opcao invalida')
-            continue
-        
-        
-
-=======
-import pandas as pd
-import os as os
-#Menu Inicial------------------------------------------------
-def opcoes():
-    print('Escolha uma opção: ')
-    print('1 - Cadastrar Produto ')
-    print('2 - Verificar Estoque')
-    print('3 - Sair')
-
-#Cadastrar Produtos------------------------------------------------
-def cadastrar():
-    while True:
-        nome = input('Nome do produto: ')
-        tamanho = input('Tamanho: ')
-        sexo = input('Sexo: ')
-        precocompra = input('Preço de Compra unitário:')
-        precovenda = input('Preço de Venda unitario: ')
-        print('Confira as informações:')
-        print(f"Nome: {nome} | Tamanho: {tamanho} | Sexo: {sexo}")
-        print(f"Preço de compra unitario: {precocompra} | Preço de venda unitario: {precovenda}")
-        infocorreta = input('\n(As informações estão corretas? (S-Sim / N-Não): ')
-        infocorreta = infocorreta.upper()
-        if infocorreta == 'S' :
-            return True
-        elif infocorreta == 'N':
-             while True:
-                opcao = input('Deseja reiniciar o cadastro? (S-Sim / N-Não): ')
-                opcao = opcao.upper()
-                if opcao == 'S':
-                    print('Reiniciando cadastro..')
-                    break
-                elif opcao == 'N':
-                    return False
-        else:
-            print('Opção invalida!')
-
-
-#Ler_compras---------------------------------------------
-def ler():
-    nomearq = "Compras.xlsx"
-    if os.path.exists(nomearq):
-        comp = pd.read_excel(nomearq)
-        print("Arquivo encontrado")
         return comp
-    else:
-        print("Arquivo não encontrado!")
+    except:
+        print('Compras não encontradas')
+#VendasTotal---------------------------------------------------
+def vendascalc():
+   try:
+     vend = pd.read_excel(nomearq, sheet_name='Vendas')
+     vend.columns = vend.columns.str.strip()
+     print(vend)
+     return vend
+   except:
+     print('Vendas não encontradas')
 
-            
-#Principal------------------------------------------------
-opcoes()
-while True:
-    opcao = int(input('Insira uma opção:'))
-    if opcao == 1:
-        print('Voce selecionou a opção 1')
-        verificacao = cadastrar()
-        if verificacao == True:
-            print('Produto cadastrado com sucesso!')
-        else:
-            print('Cadastro cancelado!')
-        opcoes()
-    elif opcao == 2:
-        print('Voce selecionou a opcao 2')
-        ler()
-     
-    elif opcao == 3:
-        print('Fim!')
-        break
-    else:
-        print('Opcao invalida')
-        opcoes()
-        
-        
->>>>>>> 40ed5cad0a625374c7fa224413cac2a0b856d2cf
+#Principal--------------------------------------------
+print("Buscando Arquivo..")
+Leitura = ler()
+
+if Leitura == True:
+    Caixa()
+    Comprasdiarias()
+
