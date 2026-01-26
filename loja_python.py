@@ -46,7 +46,6 @@ def Comprasdiarias():
                 (Estoqueanalise["Nome do produto"] == produto) &
                 (Estoqueanalise["Tamanho"] == Tamanho) 
             )
-
             if condicao.any():
                 Estoqueanalise.loc[condicao, "Quantidade"] += qntd
                 print(f"Produto encontrado no estoque: {produto} - {Tamanho}")
@@ -55,7 +54,6 @@ def Comprasdiarias():
 
             if condicao.any():
                 Comprastotal.loc[condicao, "Quantidade"] += qntd
-                Comprastotal.loc[condicao, "Data da Ultima compra"] = Hoje
                 print(f"Produto encontrado nas compras: {produto} - {Tamanho}")
             else:
                 print(f"Produto não encontrado na aba de compras: {produto} - {Tamanho}")
@@ -96,12 +94,9 @@ def Estoque():
 #ComprasTotal-------------------------------------------
 def comprascalc():
     try:
-        comp = pd.read_excel(nomearq, sheet_name='Compras')
+        comp = pd.read_excel(nomearq, sheet_name="Compras")
         comp.columns = comp.columns.str.strip()
-        comp["Compra Total"] = (comp["Preço de Compra Unitário"] * comp["Quantidade"])
-        comp["Venda Total estimada"] = (comp["Preço de Venda Unitário"] * comp["Quantidade"])
-        comp["Lucro total estimado"] = (comp["Venda Total estimada"] - comp["Compra Total"])
-        print(comp)
+        print('Compra total encontrada')
         return comp
     except:
         print('Compras não encontradas')
