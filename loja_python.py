@@ -13,8 +13,6 @@ def ler():
     else:
         print("Arquivo não encontrado!")
         return False
-
-
 #LerCaixaDiario---------------------------------------
 def Caixa():
      try:
@@ -27,58 +25,30 @@ def Caixa():
 
 #LerComprasDiarias------------------------------------------ 
 def Comprasdiarias():
-    Estoqueanalise =  Estoque()
-    Comprastotal = comprascalc()
     try:
         caixa = Caixa()
 
         if caixa is None:
          print("Caixa inválido")
          return
-        
         comprasday =  caixa[caixa["Operação"] == "Compra"]
-
-        for _, linha in comprasday.iterrows():
-            produto = linha["Nome do produto"]
-            Tamanho = linha["Tamanho"]
-            qntd = linha["Quantidade"]
-            condicao = (
-                (Estoqueanalise["Nome do produto"] == produto) &
-                (Estoqueanalise["Tamanho"] == Tamanho) 
-            )
-            if condicao.any():
-                Estoqueanalise.loc[condicao, "Quantidade"] += qntd
-                print(f"Produto encontrado no estoque: {produto} - {Tamanho}")
-            else:
-                print(f"Produto não encontrado no estoque: {produto} - {Tamanho}")
-
-            if condicao.any():
-                Comprastotal.loc[condicao, "Quantidade"] += qntd
-                print(f"Produto encontrado nas compras: {produto} - {Tamanho}")
-            else:
-                print(f"Produto não encontrado na aba de compras: {produto} - {Tamanho}")
-
-            abas = {"Caixa": pd.read_excel(nomearq, "Caixa"),
-                    "Compras": pd.read_excel(nomearq, "Compras"),
-                    "Vendas": pd.read_excel(nomearq, "Vendas"),
-                    "Estoque": Estoqueanalise}
-           
-
-            with pd.ExcelWriter(nomearq, engine="openpyxl") as writer:
-                    for nome, df in abas.items():      
-                        df.to_excel(writer, sheet_name=nome, index=False)
+        return comprasday
     except Exception as e:
         print('Compras diarias não encontradas')
         print("Erro", e)
 
 #LerVendasDiaria--------------------------------------------
-def Vendasdiarias(caixa):
+def Vendasdiarias():
      try:    
+        caixa = Caixa()
+        if caixa is None:
+            print("Caixa invalido")
+            return
         vendasday = caixa[caixa["Operação"] == "Venda"]
         return vendasday
-     except:
+     except Exception as e:
         print('Vendas diarias não encontrads')
-
+        print("Erro", e)
 #LerEstoque-------------------------------------------------
 def Estoque():
      try:
@@ -89,6 +59,14 @@ def Estoque():
      except:
          print('Estoque não encontrado')
 
+#LançarComprasDiarias----------------------------------------
+def lancarcompdia():
+    estoque = Estoque()
+    comprasdias = Comprasdiarias()
+    print(comprasdias)
+
+    for _,linha in comprasdias.iterrows():
+        print = linha[""]
 
 
 #ComprasTotal-------------------------------------------
@@ -115,6 +93,3 @@ print("Buscando Arquivo..")
 Leitura = ler()
 
 if Leitura == True:
-    Caixa()
-    Comprasdiarias()
-
