@@ -64,6 +64,11 @@ def lancaropdia():
     estoque = Estoque()
     comprast = comptotal()
     vendast = vendtotal()
+    novoprod = pd.DataFrame(columns=["Nome do produto", 
+                                           "Tamanho",
+                                            "Quantidade", 
+                                            "Valor unitario compra"
+                                             ])
     print('Verificando produtos que estão no estoque..')
     for _,linha in caixa.iterrows():
         produto = linha["Nome do produto"] 
@@ -79,25 +84,26 @@ def lancaropdia():
                     (estoque["Tamanho"] == Tamanho))
         if operacao == "Compra":
             if condicao.any():
+                
                 qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] + qnt
                 estoque.loc[condicao, "Quantidade"] = qntattest
-                print(f"Produto encontrado: {produto} - {Tamanho} - {qnt}")
-                print(f"Produto no estoque após compra: {produto} - {Tamanho} - Unidades: {qntattest}")
+                # print(f"Produto encontrado: {produto} - {Tamanho} - {qnt}")
+                # print(f"Produto no estoque após compra: {produto} - {Tamanho} - Unidades: {qntattest}")
+                
                 novacomp = pd.DataFrame([{"Nome do produto": produto, 
                                         "Tamanho": Tamanho,
                                         "Quantidade": qnt,
                                         "Valor unitario compra": valoruni,
                                         "Data da compra": data,
                                         "Sexo": sexo }])
+
                 comprast = pd.concat([comprast, novacomp], ignore_index=True)
             else:
-                print(f"Produto não encontrado: {produto} - {Tamanho}")
-                print("Cadastrando..")
-                novoprod = pd.DataFrame([{"Nome do produto": produto, 
-                                           "Tamanho": Tamanho,
-                                            "Quantidade": qnt, 
-                                            "Valor unitario compra": valoruni
-                                             }])
+                novoprod.loc[len(novoprod)] = [
+                produto,
+                Tamanho,
+                qnt, 
+                valoruni]
                 novacompT = pd.DataFrame([{"Nome do produto": produto, 
                                            "Tamanho": Tamanho,
                                             "Quantidade": qnt, 
@@ -106,15 +112,14 @@ def lancaropdia():
                                             "Sexo": sexo
                                              }])
                 estoque = pd.concat([estoque, novoprod], ignore_index=True)
-                novacomp = pd.conca([comprast, novacompT], ignore_index=True)
-                
+                novacomp = pd.concat([comprast, novacompT], ignore_index=True)
         elif operacao == "Venda":
             if condicao.any():
                 qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] - qnt
                 if qntattest >= 0:
                      estoque.loc[condicao, "Quantidade"] = qntattest
-                     print(f"Produto encontrado: {produto} - {Tamanho}")
-                     print(f"Produto no estoque após venda: {produto} - {Tamanho} - {qntattest}")
+                    #  print(f"Produto encontrado: {produto} - {Tamanho}")
+                    #  print(f"Produto no estoque após venda: {produto} - {Tamanho} - {qntattest}")
                      novavendaT = pd.DataFrame([{"Nome do produto": produto,
                                            "Tamanho": Tamanho,
                                            "Quantidade": qnt,
@@ -129,10 +134,16 @@ def lancaropdia():
     
         else:
               print(f"Foi encontrado uma operação invalida, verifique as operações lançadas no caixa! Operação: {operacao}!")
-
+    
         with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
-                    estoque.to_excel(writer, sheet_name="Estoque", index=False)
-                    comprast.to_excel(writer, sheet_name="Compras", index=False)
+                estoque.to_excel(writer, sheet_name="Estoque", index=False)
+                comprast.to_excel(writer, sheet_name="Compras", index=False)
+ 
+    print("As Novas compras cadastradas foram:")
+    for _,prod in novoprod.iterrows():
+        nome = prod["Nome do produto"]
+        tamanho = prod["Tamanho"]
+        print(f"{nome} - {tamanho} ")
 #Principal--------------------------------------------
 print("Buscando Arquivo..")
 Leitura = ler()
