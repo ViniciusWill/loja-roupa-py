@@ -20,6 +20,7 @@ def Caixa():
         caixa = pd.read_excel(nomearq, sheet_name='Caixa')
         caixa = caixa.sort_values("Data")
         caixa.columns = caixa.columns.str.strip()
+        print('Caixa encontrado')
         return caixa
 
     except Exception as e:
@@ -107,7 +108,7 @@ def lancaropdia():
                                              }])
             
                 linha_estoque = pd.DataFrame([[produto, Tamanho, qnt, valoruni]], 
-                                             columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario compra"])
+                                             columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario"])
                 estoque = pd.concat([estoque, linha_estoque], ignore_index=True)
                 comprast = pd.concat([comprast, novoitem], ignore_index=True)
                 novoprod.append(novoitem)
@@ -133,10 +134,12 @@ def lancaropdia():
     
         else:
               print(f"Foi encontrado uma operação invalida, verifique as operações lançadas no caixa! Operação: {operacao}!")
+        
     
         with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
                 estoque.to_excel(writer, sheet_name="Estoque", index=False)
                 comprast.to_excel(writer, sheet_name="Compras", index=False)
+         
     ## --- Relatorio de compras 
     if novoprod: 
         novacomp = pd.concat(novoprod, ignore_index=True)
@@ -166,7 +169,12 @@ def lancaropdia():
             print(f"{nome} - {tamanho} - Data: {data}")
     else:
         print("Nenhuma venda foi realizada hoje.")
-
+    ##LimparCaixa
+    print("operações diarias lançadas com sucesso! Limpando caixa...")
+    caixa_limpo = pd.DataFrame(columns=caixa.columns)
+    with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
+     caixa_limpo.to_excel(writer, sheet_name="Caixa", index=False)
+    print("Caixa limpo com sucesso!")
 
 #Principal--------------------------------------------
 
