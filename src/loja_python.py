@@ -1,72 +1,20 @@
 
 import pandas as pd
 import os as os
+from validacoesexcel import executar_validacoes
 
-
-nomearq = "Compras.xlsx"
-
-#LerArquivo---------------------------------------------
-def ler():
-    if os.path.exists(nomearq):
-        print("Arquivo encontrado")
-        return True
-    else:
-        print("Arquivo não encontrado!")
-        return False
-#LerCaixaDiario---------------------------------------
-def Caixa():
-    try:
-        print('Verificando caixa diario...')
-        caixa = pd.read_excel(nomearq, sheet_name='Caixa')
-        caixa = caixa.sort_values("Data")
-        caixa.columns = caixa.columns.str.strip()
-        print('Caixa encontrado')
-        return caixa
-
-    except Exception as e:
-        print('Caixa não encontrado')
-        print(e)
-        return pd.DataFrame()
-#LerEstoque-------------------------------------------------
-def Estoque():
-     try:
-        estoque = pd.read_excel(nomearq, sheet_name="Estoque")
-        estoque.columns = estoque.columns.str.strip()
-        print('Estoque encontrado')
-        return estoque
-     except:
-         print('Estoque não encontrado')
-
-#LerComprasEvendasTotal---------------------------------------
-def comptotal():
-    try:
-        compras = pd.read_excel(nomearq, sheet_name="Compras")
-        compras.columns = compras.columns.str.strip()
-        print('Compras Totais encontradas')
-        return compras
-    except Exception as e:
-        print('Compras Totais não encontradas!')
-        print(f'Erro: {e}')
-
-
-def vendtotal():
-    try:
-        vendas = pd.read_excel(nomearq, sheet_name="Vendas")
-        vendas.columns = vendas.columns.str.strip()
-        print('Vendas totais encontradas')
-        return vendas
-    except Exception as e:
-        print('Vendas totais não encontradas')
-        print(f'Erro: {e}')
 
 #LançarOperacoesDiarias----------------------------------------
-def lancaropdia():
-    caixa = Caixa()
-    estoque = Estoque()
-    comprast = comptotal()
-    vendast = vendtotal()
+def lancaropdia(dados):
+    caixa = dados["caixa"]
+    estoque = dados["estoque"]
+    comprast = dados["compras"]
+    vendast = dados["vendas"]
+    nomearq = dados["nomearq"]
+    valoreb = dados["valoreb"]
     novoprod = []
     vendasdiarias = []
+    vendasareceber = []
     print('Verificando produtos que estão no estoque..')
     for _,linha in caixa.iterrows():
         produto = linha["Nome do produto"] 
@@ -77,8 +25,12 @@ def lancaropdia():
         operacao = linha["Operação"]
         data = linha["Data"]
         sexo = linha["Sexo"]
+        Pagamento = linha["Forma Pag"]
+        Parcelas = linha["Parcelas"]
+        Participante = linha["Participante"]  
+    
 
-        condicao = ( (estoque["Nome do produto"] == produto) & 
+        condicao = ((estoque["Nome do produto"] == produto) & 
                     (estoque["Tamanho"] == Tamanho))
         if operacao == "Compra":
             ##se o produto já existe no estoque, atualiza a quantidade
@@ -127,6 +79,19 @@ def lancaropdia():
                                              "Sexo": sexo }])           
                      novavenda = pd.concat([vendast,novavendaT], ignore_index=True)
                      vendasdiarias.append(novavendaT)  # Adiciona a venda diária à lista
+                if Pagamento == "Parcelado":    
+                        valor_total = valorven * qnt
+                        valor_parcela = valor_total / Parcelas
+                        for i in range(Parcelas):
+                            vencimento = data + pd.DateOffset(months=i+1)
+                            nova_parcela = pd.DataFrame([{ "Cliente": Participante,
+                                                          "Nome do produto": produto,
+                                                          "Parcela": i+1,
+                                                          "Valor parcela": valor_parcela,
+                                                          "Data": vencimento,
+                                                          "Valor total": valor_total}])
+                            valoreb = pd.concat([valoreb, nova_parcela], ignore_index=True)
+                            vendasareceber.append(nova_parcela)  
                 else:
                     print('Não há unidades do produto disponiveis para venda!')
             else:
@@ -139,6 +104,7 @@ def lancaropdia():
         with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
                 estoque.to_excel(writer, sheet_name="Estoque", index=False)
                 comprast.to_excel(writer, sheet_name="Compras", index=False)
+                valoreb.to_excel(writer, sheet_name="A receber", index=False)
          
     ## --- Relatorio de compras 
     if novoprod: 
@@ -170,17 +136,35 @@ def lancaropdia():
     else:
         print("Nenhuma venda foi realizada hoje.")
     ##LimparCaixa
-    print("operações diarias lançadas com sucesso! Limpando caixa...")
-    caixa_limpo = pd.DataFrame(columns=caixa.columns)
-    with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
-     caixa_limpo.to_excel(writer, sheet_name="Caixa", index=False)
-    print("Caixa limpo com sucesso!")
+    ##print("operações diarias lançadas com sucesso! Limpando caixa...")
+    ##caixa_limpo = pd.DataFrame(columns=caixa.columns)
+    ##with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
+     ##caixa_limpo.to_excel(writer, sheet_name="Caixa", index=False)
+    ##print("Caixa limpo com sucesso!")
+
+
 
 #Principal--------------------------------------------
+if __name__ == "__main__":
+    print("Iniciando sistema...")
+    
+    # 1. Busca os dados
+    dados_do_excel = executar_validacoes()
+    
+    # 2. Pega a tabela do caixa para analisar
+    tabela_caixa = dados_do_excel["caixa"]
 
-
-print("Buscando Arquivo..")
-Leitura = ler()
-if Leitura == True:
-    lancaropdia()
-   
+    # 3. Diagnóstico detalhado
+    if tabela_caixa is None:
+        print("ERRO CRÍTICO: Ocorreu um erro ao tentar ler a aba Caixa (verifique se o arquivo está fechado ou corrompido).")
+    
+    elif tabela_caixa.empty:
+        print("AVISO: A aba 'Caixa' foi encontrada, mas está VAZIA (0 linhas de dados).")
+        print("Adicione pelo menos uma linha de venda ou compra no Excel para processar.")
+    
+    else:
+        # Só entra aqui se tiver dados de verdade
+        print(f"Sucesso! Encontrei {len(tabela_caixa)} operações no caixa.")
+        print("Iniciando processamento...")
+        lancaropdia(dados_do_excel)
+        print("Processo finalizado com sucesso!")
