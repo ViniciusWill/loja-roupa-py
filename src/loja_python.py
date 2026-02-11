@@ -12,9 +12,11 @@ def lancaropdia(dados):
     vendast = dados["vendas"]
     nomearq = dados["nomearq"]
     valoreb = dados["valoreb"]
+    valorpag = dados["valorpag"]
     novoprod = []
     vendasdiarias = []
     vendasareceber = []
+    contasapagar = []
     print('Verificando produtos que estão no estoque..')
     for _,linha in caixa.iterrows():
         produto = linha["Nome do produto"] 
@@ -36,34 +38,54 @@ def lancaropdia(dados):
             ##se o produto já existe no estoque, atualiza a quantidade
             if condicao.any():
                 
-                qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] + qnt
-                estoque.loc[condicao, "Quantidade"] = qntattest
+                    qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] + qnt
+                    estoque.loc[condicao, "Quantidade"] = qntattest
           
 
-                novacomp = pd.DataFrame([{"Nome do produto": produto, 
+                    novacomp = pd.DataFrame([{"Nome do produto": produto, 
                                         "Tamanho": Tamanho,
                                         "Quantidade": qnt,
                                         "Valor unitario compra": valoruni,
                                         "Data da compra": data,
                                         "Sexo": sexo }])
 
-                comprast = pd.concat([comprast, novacomp], ignore_index=True)
+                    comprast = pd.concat([comprast, novacomp], ignore_index=True)
             ##se o produto não existe no estoque, cadastra o produto e a compra
             else:
     
-                novoitem = pd.DataFrame([{"Nome do produto": produto, 
+                    novoitem = pd.DataFrame([{"Nome do produto": produto, 
                                            "Tamanho": Tamanho,
                                             "Quantidade": qnt, 
                                             "Valor unitario compra": valoruni,
                                             "Data da compra": data,
                                             "Sexo": sexo
                                              }])
-            
-                linha_estoque = pd.DataFrame([[produto, Tamanho, qnt, valoruni]], 
+                
+
+                    linha_estoque = pd.DataFrame([[produto, Tamanho, qnt, valoruni]], 
                                              columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario"])
-                estoque = pd.concat([estoque, linha_estoque], ignore_index=True)
-                comprast = pd.concat([comprast, novoitem], ignore_index=True)
-                novoprod.append(novoitem)
+                    estoque = pd.concat([estoque, linha_estoque], ignore_index=True)
+                    comprast = pd.concat([comprast, novoitem], ignore_index=True)
+                    novoprod.append(novoitem)
+            if Pagamento == "Parcelado":
+                valor_total = valoruni * qnt
+                valor_parcela = valor_total / Parcelas
+                for i in range(Parcelas):
+                    totalatualizado = valor_total - (valor_parcela * i)
+                    vencimento = data + pd.DateOffset(months=i+1)
+                    nova_parcela_compra = pd.DataFrame([{ "Cliente": Participante,
+                                                      "Nome do produto": produto,
+                                                      "Parcela": i+1,
+                                                      "Valor parcela": valor_parcela,
+                                                      "Valor total": valor_total,
+                                                      "Valor total pendente": totalatualizado,
+                                                      "Data vencimento": vencimento,}])
+                    if valorpag.empty:
+                        valorpag = nova_parcela_compra
+                    else:
+                        valorpag = pd.concat([valorpag, nova_parcela_compra], ignore_index=True)
+                contasapagar.append(nova_parcela_compra)
+
         elif operacao == "Venda":
                 ##se o produto existe no estoque, atualiza a quantidade
             if condicao.any():
@@ -83,15 +105,20 @@ def lancaropdia(dados):
                         valor_total = valorven * qnt
                         valor_parcela = valor_total / Parcelas
                         for i in range(Parcelas):
+                            totalatualizado = valor_total - (valor_parcela * i)
                             vencimento = data + pd.DateOffset(months=i+1)
-                            nova_parcela = pd.DataFrame([{ "Cliente": Participante,
+                            nova_parcela_venda = pd.DataFrame([{ "Cliente": Participante,
                                                           "Nome do produto": produto,
                                                           "Parcela": i+1,
                                                           "Valor parcela": valor_parcela,
-                                                          "Data": vencimento,
-                                                          "Valor total": valor_total}])
-                            valoreb = pd.concat([valoreb, nova_parcela], ignore_index=True)
-                            vendasareceber.append(nova_parcela)  
+                                                          "Valor total": valor_total, 
+                                                          "Valor total pendente": totalatualizado,
+                                                          "Data vencimento": vencimento,}])
+                            if valoreb.empty:
+                                valoreb = nova_parcela_venda
+                            else:
+                                valoreb = pd.concat([valoreb, nova_parcela_venda], ignore_index=True) 
+                        vendasareceber.append(nova_parcela_venda)
                 else:
                     print('Não há unidades do produto disponiveis para venda!')
             else:
@@ -105,7 +132,7 @@ def lancaropdia(dados):
                 estoque.to_excel(writer, sheet_name="Estoque", index=False)
                 comprast.to_excel(writer, sheet_name="Compras", index=False)
                 valoreb.to_excel(writer, sheet_name="A receber", index=False)
-         
+                valorpag.to_excel(writer, sheet_name="A pagar", index=False)
     ## --- Relatorio de compras 
     if novoprod: 
         novacomp = pd.concat(novoprod, ignore_index=True)
@@ -148,13 +175,9 @@ def lancaropdia(dados):
 if __name__ == "__main__":
     print("Iniciando sistema...")
     
-    # 1. Busca os dados
     dados_do_excel = executar_validacoes()
-    
-    # 2. Pega a tabela do caixa para analisar
     tabela_caixa = dados_do_excel["caixa"]
 
-    # 3. Diagnóstico detalhado
     if tabela_caixa is None:
         print("ERRO CRÍTICO: Ocorreu um erro ao tentar ler a aba Caixa (verifique se o arquivo está fechado ou corrompido).")
     
@@ -163,7 +186,6 @@ if __name__ == "__main__":
         print("Adicione pelo menos uma linha de venda ou compra no Excel para processar.")
     
     else:
-        # Só entra aqui se tiver dados de verdade
         print(f"Sucesso! Encontrei {len(tabela_caixa)} operações no caixa.")
         print("Iniciando processamento...")
         lancaropdia(dados_do_excel)

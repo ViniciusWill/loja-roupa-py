@@ -99,6 +99,7 @@ def executar_validacoes():
         "compras": df_comptotal,
         "vendas": df_vendtotal,
         "valoreb": df_valreceb,
+        "valorpag": df_valpagar,
         "valores_a_pagar": df_valpagar,
         "nomearq": ARQUIVO_EXCEL
     }
