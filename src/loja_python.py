@@ -44,26 +44,28 @@ def lancaropdia(dados):
 
                     novacomp = pd.DataFrame([{"Nome do produto": produto, 
                                         "Tamanho": Tamanho,
+                                        "Sexo": sexo,
                                         "Quantidade": qnt,
                                         "Valor unitario compra": valoruni,
-                                        "Data da compra": data,
-                                        "Sexo": sexo }])
+                                        "Data da compra": data
+                                        }])
 
                     comprast = pd.concat([comprast, novacomp], ignore_index=True)
             ##se o produto não existe no estoque, cadastra o produto e a compra
             else:
     
                     novoitem = pd.DataFrame([{"Nome do produto": produto, 
-                                           "Tamanho": Tamanho,
+                                           "Tamanho": Tamanho, 
+                                           "Sexo": sexo,
                                             "Quantidade": qnt, 
                                             "Valor unitario compra": valoruni,
-                                            "Data da compra": data,
-                                            "Sexo": sexo
+                                            "Data da compra": data
+                                           
                                              }])
                 
 
                     linha_estoque = pd.DataFrame([[produto, Tamanho, qnt, valoruni]], 
-                                             columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario"])
+                                             columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario compra"])
                     estoque = pd.concat([estoque, linha_estoque], ignore_index=True)
                     comprast = pd.concat([comprast, novoitem], ignore_index=True)
                     novoprod.append(novoitem)
@@ -93,14 +95,19 @@ def lancaropdia(dados):
                 ## verifica se há unidades disponiveis para venda, se sim, atualiza o estoque e registra a venda, se não, exibe mensagem de erro
                 if qntattest >= 0:
                      estoque.loc[condicao, "Quantidade"] = qntattest
-                     novavendaT = pd.DataFrame([{"Nome do produto": produto,
-                                           "Tamanho": Tamanho,
+                     novavendaT = pd.DataFrame([{ "Cliente": Participante,
+                                           "Nome do produto": produto,
+                                           "Tamanho": Tamanho,  
+                                           "Sexo": sexo,
                                            "Quantidade": qnt,
                                            "Valor unitario venda": valorven,
-                                            "Data": data,
-                                             "Sexo": sexo }])           
-                     novavenda = pd.concat([vendast,novavendaT], ignore_index=True)
+                                            "Data": data
+                                             }])           
+                     vendast = pd.concat([vendast,novavendaT], ignore_index=True)
                      vendasdiarias.append(novavendaT)  # Adiciona a venda diária à lista
+                elif qntattest < 0:
+                    print('Não há unidades do produto disponiveis para venda!')
+                    vendast = pd.DataFrame()  # Cria um DataFrame vazio para vendas
                 if Pagamento == "Parcelado":    
                         valor_total = valorven * qnt
                         valor_parcela = valor_total / Parcelas
@@ -119,20 +126,20 @@ def lancaropdia(dados):
                             else:
                                 valoreb = pd.concat([valoreb, nova_parcela_venda], ignore_index=True) 
                         vendasareceber.append(nova_parcela_venda)
-                else:
-                    print('Não há unidades do produto disponiveis para venda!')
+                
             else:
                 print(f"Produto não cadastrado no estoque! {produto} - {Tamanho}")
-    
+                vendast = pd.DataFrame()  # Cria um DataFrame vazio para vendas
         else:
               print(f"Foi encontrado uma operação invalida, verifique as operações lançadas no caixa! Operação: {operacao}!")
-        
+              vendast = pd.DataFrame()  # Cria um DataFrame vazio para vendas
     
         with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
                 estoque.to_excel(writer, sheet_name="Estoque", index=False)
                 comprast.to_excel(writer, sheet_name="Compras", index=False)
                 valoreb.to_excel(writer, sheet_name="A receber", index=False)
                 valorpag.to_excel(writer, sheet_name="A pagar", index=False)
+                vendast.to_excel(writer, sheet_name="Vendas", index=False)
     ## --- Relatorio de compras 
     if novoprod: 
         novacomp = pd.concat(novoprod, ignore_index=True)
