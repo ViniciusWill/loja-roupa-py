@@ -84,6 +84,17 @@ def valpagar():
         print('Valores a pagar não encontrados')
         print(f'Erro: {e}')
         return pd.DataFrame()
+def Clientes():
+    try:
+        clientes = pd.read_excel(ARQUIVO_EXCEL, sheet_name="Clientes")
+        clientes.columns = clientes.columns.str.strip()
+        print('Clientes encontrados')
+        return clientes
+    except Exception as e:
+        print('Clientes não encontrados')
+        print(f'Erro: {e}')
+        return pd.DataFrame()
+
 
 def executar_validacoes():
     encontrar_arquivo()
@@ -93,6 +104,8 @@ def executar_validacoes():
     df_vendtotal = vendtotal()
     df_valreceb = valreceb()
     df_valpagar = valpagar()
+    df_clientes = Clientes()
+
     return {
         "caixa": df_caixa,
         "estoque": df_estoque,
@@ -100,8 +113,8 @@ def executar_validacoes():
         "vendas": df_vendtotal,
         "valoreb": df_valreceb,
         "valorpag": df_valpagar,
-        "valores_a_pagar": df_valpagar,
-        "nomearq": ARQUIVO_EXCEL
+        "nomearq": ARQUIVO_EXCEL,
+        "clientes": df_clientes
     }
 
 
