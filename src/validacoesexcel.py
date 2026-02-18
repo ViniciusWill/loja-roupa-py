@@ -66,7 +66,7 @@ def vendtotal():
 #LerValoresaReceberePagar---------------------------------------
 def valreceb():
     try: 
-        valreceber = pd.read_excel(ARQUIVO_EXCEL, sheet_name = "A receber")
+        valreceber = pd.read_excel(ARQUIVO_EXCEL, sheet_name = "A Receber")
         valreceber.columns = valreceber.columns.str.strip()
         print('Valores a receber encontrados')
         return valreceber
@@ -76,7 +76,7 @@ def valreceb():
         return pd.DataFrame()
 def valpagar():
     try: 
-        valrpag = pd.read_excel(ARQUIVO_EXCEL, sheet_name= "A pagar")
+        valrpag = pd.read_excel(ARQUIVO_EXCEL, sheet_name= "A Pagar")
         valrpag.columns = valrpag.columns.str.strip()
         print('Valores a pagar encontrados')
         return valrpag
@@ -107,14 +107,14 @@ def executar_validacoes():
     df_clientes = Clientes()
 
     return {
-        "caixa": df_caixa,
-        "estoque": df_estoque,
-        "compras": df_comptotal,
-        "vendas": df_vendtotal,
-        "valoreb": df_valreceb,
-        "valorpag": df_valpagar,
+        "Caixa": df_caixa,
+        "Estoque": df_estoque,
+        "Compras": df_comptotal,
+        "Vendas": df_vendtotal,
+        "A Receber": df_valreceb,
+        "A Pagar": df_valpagar,
         "nomearq": ARQUIVO_EXCEL,
-        "clientes": df_clientes
+        "Clientes": df_clientes
     }
 
 

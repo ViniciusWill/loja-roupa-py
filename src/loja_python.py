@@ -2,18 +2,18 @@
 import pandas as pd
 import os as os
 from validacoesexcel import executar_validacoes
-
+from formatarexcel import executar_formatacao
 
 #LançarOperacoesDiarias----------------------------------------
 def lancaropdia(dados):
-    caixa = dados["caixa"]
-    estoque = dados["estoque"]
-    comprast = dados["compras"]
-    vendast = dados["vendas"]
+    caixa = dados["Caixa"]
+    estoque = dados["Estoque"]
+    comprast = dados["Compras"]
+    vendast = dados["Vendas"]
     nomearq = dados["nomearq"]
-    valoreb = dados["valoreb"]
-    valorpag = dados["valorpag"]
-    clientes = dados.get("clientes") if "clientes" in dados else dados.get("clientes")
+    valoreb = dados["A Receber"]
+    valorpag = dados["A Pagar"]
+    clientes = dados["Clientes"]
     novoprod = []
     vendasdiarias = []
     vendasareceber = []
@@ -76,7 +76,7 @@ def lancaropdia(dados):
                 for i in range(Parcelas):
                     totalatualizado = valor_total - (valor_parcela * i)
                     vencimento = data + pd.DateOffset(months=i+1)
-                    nova_parcela_compra = pd.DataFrame([{ "Cliente": Participante,
+                    nova_parcela_compra = pd.DataFrame([{ "Participante": Participante,
                                                       "Nome do produto": produto,
                                                       "Parcela": i+1,
                                                       "Valor parcela": valor_parcela,
@@ -142,8 +142,8 @@ def lancaropdia(dados):
         with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
                 estoque.to_excel(writer, sheet_name="Estoque", index=False)
                 comprast.to_excel(writer, sheet_name="Compras", index=False)
-                valoreb.to_excel(writer, sheet_name="A receber", index=False)
-                valorpag.to_excel(writer, sheet_name="A pagar", index=False)
+                valoreb.to_excel(writer, sheet_name="A Receber", index=False)
+                valorpag.to_excel(writer, sheet_name="A Pagar", index=False)
                 vendast.to_excel(writer, sheet_name="Vendas", index=False)
 
     ## --- Relatorio de compras 
@@ -189,7 +189,7 @@ if __name__ == "__main__":
     print("Iniciando sistema...")
     
     dados_do_excel = executar_validacoes()
-    tabela_caixa = dados_do_excel["caixa"]
+    tabela_caixa = dados_do_excel["Caixa"]
 
     if tabela_caixa is None:
         print("ERRO CRÍTICO: Ocorreu um erro ao tentar ler a aba Caixa (verifique se o arquivo está fechado ou corrompido).")
@@ -203,3 +203,7 @@ if __name__ == "__main__":
         print("Iniciando processamento...")
         lancaropdia(dados_do_excel)
         print("Processo finalizado com sucesso!")
+        print("Aplicando formatações finais no Excel...")
+        executar_formatacao()
+        print("Formatações aplicadas com sucesso! O arquivo final está pronto para uso.")
+
