@@ -4,11 +4,11 @@ import os as os
 from validacoesexcel import executar_validacoes
 from formatarexcel import executar_formatacao
 
-#LançarOperacoesDiarias----------------------------------------
+##  LançarOperacoesDiarias
 def lancaropdia(dados):
     caixa = dados["Caixa"]
     estoque = dados["Estoque"]
-    comprast = dados["Compras"]
+    ComprasTotal = dados["Compras"]
     vendast = dados["Vendas"]
     nomearq = dados["nomearq"]
     valoreb = dados["A Receber"]
@@ -32,30 +32,19 @@ def lancaropdia(dados):
         Parcelas = linha["Parcelas"]
         Participante = linha["Participante"]  
     
-
+        ## verifica se o produto existe no estoque 
         condicao = ((estoque["Nome do produto"] == produto) & 
                     (estoque["Tamanho"] == Tamanho))
-        if operacao == "Compra":
-            ##se o produto já existe no estoque, atualiza a quantidade
-            if condicao.any():
-                
-                    qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] + qnt
-                    estoque.loc[condicao, "Quantidade"] = qntattest
-          
 
-                    novacomp = pd.DataFrame([{"Nome do produto": produto, 
-                                        "Tamanho": Tamanho,
-                                        "Sexo": sexo,
-                                        "Quantidade": qnt,
-                                        "Valor unitario compra": valoruni,
-                                        "Data da compra": data
-                                        }])
-
-                    comprast = pd.concat([comprast, novacomp], ignore_index=True)
-            ##se o produto não existe no estoque, cadastra o produto e a compra
-            else:
-    
-                    novoitem = pd.DataFrame([{"Nome do produto": produto, 
+        ##  cria dataframes para registrar as compras, vendas, contas a pagar e contas a receber
+        NovaCompra = pd.DataFrame([{"Nome do produto": produto, 
+                                    "Tamanho": Tamanho,
+                                    "Sexo": sexo,
+                                    "Quantidade": qnt,
+                                    "Valor unitario compra": valoruni,
+                                    "Data da compra": data
+                                    }])
+        NovoItemCompraEstoque = pd.DataFrame([{"Nome do produto": produto, 
                                            "Tamanho": Tamanho, 
                                            "Sexo": sexo,
                                             "Quantidade": qnt, 
@@ -63,13 +52,30 @@ def lancaropdia(dados):
                                             "Data da compra": data
                                            
                                              }])
-                
+        NovaLinhaEstoque = pd.DataFrame([[produto, Tamanho, qnt, valoruni]],
+                    columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario compra"])         
 
-                    linha_estoque = pd.DataFrame([[produto, Tamanho, qnt, valoruni]], 
-                                             columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario compra"])
-                    estoque = pd.concat([estoque, linha_estoque], ignore_index=True)
-                    comprast = pd.concat([comprast, novoitem], ignore_index=True)
-                    novoprod.append(novoitem)
+        NovaVenda = pd.DataFrame([{ "Cliente": Participante,
+                                           "Nome do produto": produto,
+                                           "Tamanho": Tamanho,  
+                                           "Sexo": sexo,
+                                           "Quantidade": qnt,
+                                           "Valor unitario venda": valorven,
+                                            "Data": data
+                                             }])  
+                
+        if operacao == "Compra":
+            ## se o produto já existe no estoque, atualiza a quantidade
+            if condicao.any():
+                    qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] + qnt
+                    estoque.loc[condicao, "Quantidade"] = qntattest
+                    ComprasTotal = pd.concat([ComprasTotal, NovaCompra], ignore_index=True)
+            ## se o produto não existe no estoque, cadastra o produto e a compra
+            else:
+                    estoque = pd.concat([estoque, NovaLinhaEstoque], ignore_index=True)
+                    ComprasTotal = pd.concat([ComprasTotal, NovoItemCompraEstoque], ignore_index=True)
+                    novoprod.append(NovoItemCompraEstoque)
+            ## se a compra for parcelada, calcula as parcelas e registra as contas a pagar
             if Pagamento == "Parcelado":
                 valor_total = valoruni * qnt
                 valor_parcela = valor_total / Parcelas
@@ -90,25 +96,18 @@ def lancaropdia(dados):
                 contasapagar.append(nova_parcela_compra)
 
         elif operacao == "Venda":
-                ##se o produto existe no estoque, atualiza a quantidade
+                ## se o produto existe no estoque, atualiza a quantidade
             if condicao.any():
                 qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] - qnt
                 ## verifica se há unidades disponiveis para venda, se sim, atualiza o estoque e registra a venda, se não, exibe mensagem de erro
                 if qntattest >= 0:
                      estoque.loc[condicao, "Quantidade"] = qntattest
-                     novavendaT = pd.DataFrame([{ "Cliente": Participante,
-                                           "Nome do produto": produto,
-                                           "Tamanho": Tamanho,  
-                                           "Sexo": sexo,
-                                           "Quantidade": qnt,
-                                           "Valor unitario venda": valorven,
-                                            "Data": data
-                                             }])           
-                     vendast = pd.concat([vendast,novavendaT], ignore_index=True)
-                     vendasdiarias.append(novavendaT)  # Adiciona a venda diária à lista
+                      
+                     vendast = pd.concat([vendast,NovaVenda], ignore_index=True)
+                     vendasdiarias.append(NovaVenda) 
                 elif qntattest < 0:
                     print('Não há unidades do produto disponiveis para venda!')
-                    vendast = pd.DataFrame()  # Cria um DataFrame vazio para vendas
+                    vendast = pd.DataFrame()  
                 if Pagamento == "Parcelado":    
                         valor_total = valorven * qnt
                         valor_parcela = valor_total / Parcelas
@@ -127,32 +126,32 @@ def lancaropdia(dados):
                             else:
                                 valoreb = pd.concat([valoreb, nova_parcela_venda], ignore_index=True) 
                         vendasareceber.append(nova_parcela_venda)
-                #Verifica se o cliente existe na lista de clientes, se não, exibe mensagem de erro
+
+                ## Verifica se o cliente existe na lista de clientes, se não, exibe mensagem de erro
                 if Participante not in clientes["Nome"].values:
                     print(f"Cliente {Participante} não encontrado na lista de clientes! Verifique se o cliente está cadastrado ou se o nome foi digitado corretamente.")
                 
                 
             else:
                 print(f"Produto não cadastrado no estoque! {produto} - {Tamanho}")
-                vendast = pd.DataFrame()  # Cria um DataFrame vazio para vendas
+                vendast = pd.DataFrame()  
         else:
               print(f"Foi encontrado uma operação invalida, verifique as operações lançadas no caixa! Operação: {operacao}!")
-              vendast = pd.DataFrame()  # Cria um DataFrame vazio para vendas
-    
+              vendast = pd.DataFrame()  
         with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
                 estoque.to_excel(writer, sheet_name="Estoque", index=False)
-                comprast.to_excel(writer, sheet_name="Compras", index=False)
+                ComprasTotal.to_excel(writer, sheet_name="Compras", index=False)
                 valoreb.to_excel(writer, sheet_name="A Receber", index=False)
                 valorpag.to_excel(writer, sheet_name="A Pagar", index=False)
                 vendast.to_excel(writer, sheet_name="Vendas", index=False)
 
-    ## --- Relatorio de compras 
+##  Relatorio de compras 
     if novoprod: 
-        novacomp = pd.concat(novoprod, ignore_index=True)
+        NovaCompra = pd.concat(novoprod, ignore_index=True)
     else:
-        novacomp = pd.DataFrame()
+        NovaCompra = pd.DataFrame()
 
-    if not novacomp.empty:
+    if not NovaCompra.empty:
       print("Os novos produtos cadastrados foram:")
       for _,prod in novoprod.iterrows():
         nome = prod["Nome do produto"]
@@ -160,8 +159,8 @@ def lancaropdia(dados):
         print(f"{nome} - {tamanho} ")
     else: 
         print("Nenhum novo produto foi cadastrado no estoque.")
-    ## --- Relatorio de vendas
-    if vendasdiarias:  # Verifica se a lista de vendas diárias não está vazia
+##  Relatorio de vendas
+    if vendasdiarias:  #
         novavenda = pd.concat(vendasdiarias, ignore_index=True)
     else:
         novavenda = pd.DataFrame()
@@ -175,16 +174,20 @@ def lancaropdia(dados):
             print(f"{nome} - {tamanho} - Data: {data}")
     else:
         print("Nenhuma venda foi realizada hoje.")
-    ##LimparCaixa
-    ##print("operações diarias lançadas com sucesso! Limpando caixa...")
-    ##caixa_limpo = pd.DataFrame(columns=caixa.columns)
-    ##with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
-     ##caixa_limpo.to_excel(writer, sheet_name="Caixa", index=False)
-    ##print("Caixa limpo com sucesso!")
+
+ ## limpar caixa diario
+def limparcaixa(dados):
+    caixa = dados["Caixa"]
+    nomearq = dados["nomearq"]
+    print("operações diarias lançadas com sucesso! Limpando caixa...")
+    caixa_limpo = pd.DataFrame(columns=dados["Caixa"].columns)
+    with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
+     caixa_limpo.to_excel(writer, sheet_name="Caixa", index=False)
+    print("Caixa limpo com sucesso!")
 
 
 
-#Principal--------------------------------------------
+## Principal
 if __name__ == "__main__":
     print("Iniciando sistema...")
     
@@ -197,13 +200,16 @@ if __name__ == "__main__":
     elif tabela_caixa.empty:
         print("AVISO: A aba 'Caixa' foi encontrada, mas está VAZIA (0 linhas de dados).")
         print("Adicione pelo menos uma linha de venda ou compra no Excel para processar.")
-    
+
     else:
-        print(f"Sucesso! Encontrei {len(tabela_caixa)} operações no caixa.")
         print("Iniciando processamento...")
         lancaropdia(dados_do_excel)
         print("Processo finalizado com sucesso!")
         print("Aplicando formatações finais no Excel...")
         executar_formatacao()
-        print("Formatações aplicadas com sucesso! O arquivo final está pronto para uso.")
-
+        print("Formatações aplicadas com sucesso! ")
+        limpar = input("Deseja limpar o caixa? (Digite 's' para sim ou 'n' para não): ")
+        if limpar.lower() == "s":
+            limparcaixa(dados_do_excel)
+        else:            
+            print("Caixa não limpo. Lembre-se de limpar o caixa manualmente ou executar a função de limpeza para evitar processar as mesmas operações novamente.")
