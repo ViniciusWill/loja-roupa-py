@@ -145,6 +145,12 @@ def lancaropdia(dados):
                 valoreb.to_excel(writer, sheet_name="A Receber", index=False)
                 valorpag.to_excel(writer, sheet_name="A Pagar", index=False)
                 vendast.to_excel(writer, sheet_name="Vendas", index=False)
+    
+    dados["Estoque"] = estoque
+    dados["Compras"] = ComprasTotal
+    dados["A Receber"] = valoreb
+    dados["A Pagar"] = valorpag
+    dados["Vendas"] = vendast
 
 ##  Relatorio de compras 
     if novoprod: 
