@@ -134,11 +134,12 @@ def lancaropdia(dados):
                 
             else:
                 print(f"Produto não cadastrado no estoque! {produto} - {Tamanho}")
-                vendast = pd.DataFrame()  
+               
         else:
               print(f"Foi encontrado uma operação invalida, verifique as operações lançadas no caixa! Operação: {operacao}!")
-              vendast = pd.DataFrame()  
-        with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
+         
+
+    with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
                 estoque.to_excel(writer, sheet_name="Estoque", index=False)
                 ComprasTotal.to_excel(writer, sheet_name="Compras", index=False)
                 valoreb.to_excel(writer, sheet_name="A Receber", index=False)
@@ -206,7 +207,7 @@ if __name__ == "__main__":
         lancaropdia(dados_do_excel)
         print("Processo finalizado com sucesso!")
         print("Aplicando formatações finais no Excel...")
-        executar_formatacao()
+        executar_formatacao(dados_do_excel)
         print("Formatações aplicadas com sucesso! ")
         limpar = input("Deseja limpar o caixa? (Digite 's' para sim ou 'n' para não): ")
         if limpar.lower() == "s":

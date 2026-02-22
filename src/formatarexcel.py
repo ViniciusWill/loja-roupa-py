@@ -2,7 +2,6 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from config import ARQUIVO_EXCEL 
-from validacoesexcel import executar_validacoes
 
 
 # --- 1. Dicionários de Configuração ---
@@ -263,9 +262,9 @@ def aplicar_estilos_excel(writer, nome_aba, df, mapeamento, formatos):
 
 
 ##Principal
-def executar_formatacao():
-    dados_excel = executar_validacoes()
-    caminho = "C:/Users/vinicius.gomes/Desktop/lojapy10/dados/"
+def executar_formatacao(dados_excel):
+
+    caminho = "C:/Users/vinicius.gomes/Desktop/py/loja-roupa-py/dados/"
     arquivo_saida = caminho + "Controle.xlsx"
     formatarcaixa = caixa(dados_excel, arquivo_saida)
     formatarcompras = compras(dados_excel, arquivo_saida)
