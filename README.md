@@ -56,14 +56,16 @@ ESTRUTURA DO PROJETO (EXEMPLO)
 loja-controle/
 
 src/
-loja_python.py
-caixa.py
-estoque.py
+lançamentodiario.py
+validacoesexcel.py
+dataframe.py
+main.py
+config.py
 vendas.py
 compras.py
 
 data/
-loja.xlsx
+controle.xlsx
 
 tests/
 
