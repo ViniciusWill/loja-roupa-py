@@ -23,8 +23,4 @@ if __name__ == "__main__":
         print("Aplicando formatações finais no Excel...")
         executar_formatacao(dados_do_excel)
         print("Formatações aplicadas com sucesso! ")
-        # limpar = input("Deseja limpar o caixa? (Digite 's' para sim ou 'n' para não): ")
-        # if limpar.lower() == "s":
-        #     limparcaixa(dados_do_excel)
-        # else:            
-        #     print("Caixa não limpo. Lembre-se de limpar o caixa manualmente ou executar a função de limpeza para evitar processar as mesmas operações novamente.")
+ 

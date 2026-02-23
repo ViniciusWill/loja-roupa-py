@@ -1,4 +1,7 @@
 import pandas as pd 
+from dataframe import Dataframescompra, DataframesEstoque, Dataframesvenda
+from compras import Lançarcomprasnoestoque
+from vendas import Lançarvendasnoestoque
 
 
 def lancaropdia(dados):
@@ -31,46 +34,22 @@ def lancaropdia(dados):
         ## verifica se o produto existe no estoque 
         condicao = ((estoque["Nome do produto"] == produto) & 
                     (estoque["Tamanho"] == Tamanho))
-
+        
         ##  cria dataframes para registrar as compras, vendas, contas a pagar e contas a receber
-        NovaCompra = pd.DataFrame([{"Nome do produto": produto, 
-                                    "Tamanho": Tamanho,
-                                    "Sexo": sexo,
-                                    "Quantidade": qnt,
-                                    "Valor unitario compra": valoruni,
-                                    "Data da compra": data
-                                    }])
-        NovoItemCompraEstoque = pd.DataFrame([{"Nome do produto": produto, 
-                                           "Tamanho": Tamanho, 
-                                           "Sexo": sexo,
-                                            "Quantidade": qnt, 
-                                            "Valor unitario compra": valoruni,
-                                            "Data da compra": data
-                                           
-                                             }])
-        NovaLinhaEstoque = pd.DataFrame([[produto, Tamanho, qnt, valoruni]],
-                    columns=["Nome do produto", "Tamanho", "Quantidade", "Valor unitario compra"])         
-
-        NovaVenda = pd.DataFrame([{ "Cliente": Participante,
-                                           "Nome do produto": produto,
-                                           "Tamanho": Tamanho,  
-                                           "Sexo": sexo,
-                                           "Quantidade": qnt,
-                                           "Valor unitario venda": valorven,
-                                            "Data": data
-                                             }])  
+        NovaCompra = Dataframescompra(produto, Tamanho, sexo, qnt, valoruni, data)
+        NovalinhaEstoque = DataframesEstoque(produto, Tamanho, qnt, valoruni)
+        NovaVenda = Dataframesvenda(Participante, produto, Tamanho, sexo, qnt, valoruni, data)
                 
         if operacao == "Compra":
             ## se o produto já existe no estoque, atualiza a quantidade
             if condicao.any():
                     qntattest = estoque.loc[condicao, "Quantidade"].iloc[0] + qnt
-                    estoque.loc[condicao, "Quantidade"] = qntattest
-                    ComprasTotal = pd.concat([ComprasTotal, NovaCompra], ignore_index=True)
+                    estoque.loc[condicao, "Quantidade"] = qntattest       
             ## se o produto não existe no estoque, cadastra o produto e a compra
             else:
-                    estoque = pd.concat([estoque, NovaLinhaEstoque], ignore_index=True)
-                    ComprasTotal = pd.concat([ComprasTotal, NovoItemCompraEstoque], ignore_index=True)
-                    novoprod.append(NovoItemCompraEstoque)
+                    estoque = pd.concat([estoque, NovalinhaEstoque], ignore_index=True)
+                    novoprod.append(NovalinhaEstoque)
+            ComprasTotal = Lançarcomprasnoestoque(ComprasTotal, NovaCompra)
             ## se a compra for parcelada, calcula as parcelas e registra as contas a pagar
             if Pagamento == "Parcelado":
                 valor_total = valoruni * qnt
@@ -90,6 +69,7 @@ def lancaropdia(dados):
                     else:
                         valorpag = pd.concat([valorpag, nova_parcela_compra], ignore_index=True)
                 contasapagar.append(nova_parcela_compra)
+            
 
         elif operacao == "Venda":
                 ## se o produto existe no estoque, atualiza a quantidade
@@ -99,11 +79,11 @@ def lancaropdia(dados):
                 if qntattest >= 0:
                      estoque.loc[condicao, "Quantidade"] = qntattest
                       
-                     vendast = pd.concat([vendast,NovaVenda], ignore_index=True)
-                     vendasdiarias.append(NovaVenda) 
+                     vendast = Lançarvendasnoestoque(vendast, NovaVenda) 
+                     vendasdiarias.append(NovaVenda)    
                 elif qntattest < 0:
                     print('Não há unidades do produto disponiveis para venda!')
-                    vendast = pd.DataFrame()  
+        
                 if Pagamento == "Parcelado":    
                         valor_total = valorven * qnt
                         valor_parcela = valor_total / Parcelas
@@ -147,34 +127,34 @@ def lancaropdia(dados):
     dados["A Receber"] = valoreb
     dados["A Pagar"] = valorpag
     dados["Vendas"] = vendast
-
-##  Relatorio de compras 
-    if novoprod: 
-        NovaCompra = pd.concat(novoprod, ignore_index=True)
+# Relatorio de compras 
+    if novoprod:
+      novoprod = pd.concat(novoprod, ignore_index=True)
     else:
-        NovaCompra = pd.DataFrame()
+     novoprod = pd.DataFrame()
 
-    if not NovaCompra.empty:
-      print("Os novos produtos cadastrados foram:")
-      for _,prod in novoprod.iterrows():
+    if not novoprod.empty:
+        print("Os novos produtos cadastrados foram:")
+    for _, prod in novoprod.iterrows():
         nome = prod["Nome do produto"]
         tamanho = prod["Tamanho"]
-        print(f"{nome} - {tamanho} ")
-    else: 
+        print(f"{nome} - {tamanho}")
+    else:
         print("Nenhum novo produto foi cadastrado no estoque.")
-##  Relatorio de vendas
-    if vendasdiarias:  #
+
+# Relatorio de vendas
+    if vendasdiarias:
         novavenda = pd.concat(vendasdiarias, ignore_index=True)
     else:
         novavenda = pd.DataFrame()
 
-    if not novavenda.empty:   
+    if not novavenda.empty:
         print("As vendas realizadas foram:")
-        for _,vend in novavenda.iterrows():
-            nome = vend["Nome do produto"]
-            tamanho = vend["Tamanho"]
-            data = vend["Data"]
-            print(f"{nome} - {tamanho} - Data: {data}")
+    for _, vend in novavenda.iterrows():
+        nome = vend["Nome do produto"]
+        tamanho = vend["Tamanho"]
+        data = vend["Data"]
+        print(f"{nome} - {tamanho} - Data: {data}")
     else:
         print("Nenhuma venda foi realizada hoje.")
 
