@@ -1,5 +1,5 @@
 import pandas as pd 
-from dataframe import Dataframescompra, DataframesEstoque, Dataframesvenda
+from dataframe import Dataframesvenda, Dataframescompra, DataframesEstoque
 from compras import Lançarcomprasnoestoque
 from vendas import Lançarvendasnoestoque
 
@@ -35,9 +35,26 @@ def lancaropdia(dados):
         ##  cria dataframes para registrar as compras, vendas, contas a pagar e contas a receber
 
         NovaVenda = Dataframesvenda(Participante, produto, Tamanho, sexo, qnt, valoruni, data)
-                
+        NovaCompra = Dataframescompra(produto, Tamanho, sexo, qnt, valoruni, data)
+        NovalinhaEstoque = DataframesEstoque(produto, Tamanho, qnt, valoruni)    
+
         if operacao == "Compra":
-            CompTotal = Lançarcomprasnoestoque(linha, estoque, ComprasTotal, dados)
+            ComprasTotal, estoque, valorpag = Lançarcomprasnoestoque(
+                linha, estoque, ComprasTotal, NovaCompra, NovalinhaEstoque, valorpag
+            )
+    dados_atualizados = {
+        "Compras": ComprasTotal,
+        "Estoque": estoque,
+        "A Pagar": valorpag,}
+    return dados_atualizados, nomearq
+
+    
+def salvar_dados_erp(dados_atualizados, nomearq):
+    print('Salvando todas as atualizações no banco de dados (Excel)...')
+    with pd.ExcelWriter(nomearq, mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
+        dados_atualizados["Compras"].to_excel(writer, sheet_name="Compras", index=False)
+        dados_atualizados["A Pagar"].to_excel(writer, sheet_name="A Pagar", index=False)
+        dados_atualizados["Estoque"].to_excel(writer, sheet_name="Estoque", index=False)
 #         elif operacao == "Venda":
 #                 ## se o produto existe no estoque, atualiza a quantidade
 #             if condicao.any():

@@ -20,7 +20,7 @@ if __name__ == "__main__":
         print("Iniciando processamento...")
         lancaropdia(dados_do_excel)
         print("Processo finalizado com sucesso!")
-        print("Aplicando formatações finais no Excel...")
-        executar_formatacao(dados_do_excel)
-        print("Formatações aplicadas com sucesso! ")
+        # print("Aplicando formatações finais no Excel...")
+        # executar_formatacao(dados_do_excel)
+        # print("Formatações aplicadas com sucesso! ")
  

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from config import ARQUIVO_EXCEL 
@@ -264,8 +265,8 @@ def aplicar_estilos_excel(writer, nome_aba, df, mapeamento, formatos):
 ##Principal
 def executar_formatacao(dados_excel):
 
-    caminho = "C:/Users/vinicius.gomes/Desktop/py/loja-roupa-py/dados/"
-    arquivo_saida = caminho + "Controle.xlsx"
+    caminho = r"C:\Users\55329\Desktop\lojapyREM\dados"
+    arquivo_saida = os.path.join(caminho, "Controle.xlsx")
     formatarcaixa = caixa(dados_excel, arquivo_saida)
     formatarcompras = compras(dados_excel, arquivo_saida)
     formatarvendas = vendas(dados_excel, arquivo_saida)
