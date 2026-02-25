@@ -40,4 +40,4 @@ def Lançarcomprasnoestoque(Linhacaixa, estoque ,CompTotal, Ncompra, NLEstoque, 
                 contasapagar.append(nova_parcela_compra)
     
 
-    return CompTotal, estoque, valorpag
+    return CompTotal, estoque, valorpag, novoprod, contasapagar

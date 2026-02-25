@@ -46,4 +46,4 @@ def Lançarvendasnoestoque(VendasT, Linhacaixa, estoque, ValorReceb, clientes , 
             print(f"Cliente {Participante} não encontrado na lista de clientes! Verifique se o cliente está cadastrado ou se o nome foi digitado corretamente.")            
     else:
         print(f"Produto não cadastrado no estoque! {produto} - {Tamanho}")
-    return VendasT, estoque, ValorReceb, clientes
+    return VendasT, estoque, ValorReceb, clientes, vendasareceber

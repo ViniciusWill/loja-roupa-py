@@ -2,7 +2,7 @@ import pandas as pd
 from dataframe import Dataframesvenda, Dataframescompra, DataframesEstoque
 from compras import Lançarcomprasnoestoque
 from vendas import Lançarvendasnoestoque
-
+from relatorio import RelatorioCompras, RelatoriosVendas 
 
 def lancaropdia(dados):
     novoprod = []
@@ -35,9 +35,9 @@ def lancaropdia(dados):
         NovalinhaEstoque = DataframesEstoque(produto, Tamanho, qnt, valoruni) 
 
         if operacao == "Compra":
-            ComprasTotal, estoque, valorpag = Lançarcomprasnoestoque(linha, estoque, ComprasTotal, NovaCompra, NovalinhaEstoque, valorpag, novoprod, contasapagar)
+            ComprasTotal, estoque, valorpag, novoprod, contasapagar = Lançarcomprasnoestoque(linha, estoque, ComprasTotal, NovaCompra, NovalinhaEstoque, valorpag,  novoprod, contasapagar )
         elif operacao == "Venda":
-            VendasTotal, estoque, valoreb, clientes = Lançarvendasnoestoque(VendasTotal, linha, estoque, valoreb, clientes , NovaVenda, vendad, vendasareceber)
+            VendasTotal, estoque, valoreb, clientes, vendasareceber = Lançarvendasnoestoque(VendasTotal, linha, estoque, valoreb, clientes, NovaVenda, vendad, vendasareceber)
         else:
                print(f"Foi encontrado uma operação invalida, verifique as operações lançadas no caixa! Operação: {operacao}!")
 
@@ -50,37 +50,7 @@ def lancaropdia(dados):
         "A Receber": valoreb,
         "A Pagar": valorpag,
         "Clientes": clientes,}
-    
 
-# Relatorio de compras 
-    if novoprod:
-      novoprod = pd.concat(novoprod, ignore_index=True)
-    else:
-     novoprod = pd.DataFrame()
+  
 
-    if not novoprod.empty:
-        print("Os novos produtos cadastrados foram:")
-    for _, prod in novoprod.iterrows():
-        nome = prod["Nome do produto"]
-        tamanho = prod["Tamanho"]
-        print(f"{nome} - {tamanho}")
-    else:
-        print("Nenhum novo produto foi cadastrado no estoque.")
-
-# Relatorio de vendas
-    if vendad:
-        vendad = pd.concat(vendad, ignore_index=True)
-    else:
-        vendad = pd.DataFrame()
-
-    if not vendad.empty:
-        print("As vendas realizadas foram:")
-    for _, vend in vendad.iterrows():
-        nome = vend["Nome do produto"]
-        tamanho = vend["Tamanho"]
-        data = vend["Data"]
-        print(f"{nome} - {tamanho} - Data: {data}")
-    else:
-        print("Nenhuma venda foi realizada hoje.")
-
-    return dados_atualizados, nomearq
+    return dados_atualizados, nomearq, novoprod, vendad
