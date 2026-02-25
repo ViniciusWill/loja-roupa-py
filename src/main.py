@@ -2,7 +2,6 @@ from validacoesexcel import executar_validacoes
 from formatarexcel import executar_formatacao
 from lançamentodiario import lancaropdia
 
-
 if __name__ == "__main__":
     print("Iniciando sistema...")
     
@@ -18,9 +17,9 @@ if __name__ == "__main__":
 
     else:
         print("Iniciando processamento...")
-        lancaropdia(dados_do_excel)
+        dados_prontos, caminho_do_arquivo = lancaropdia(dados_do_excel)
         print("Processo finalizado com sucesso!")
         print("Aplicando formatações finais no Excel...")
-        executar_formatacao(dados_do_excel)
+        executar_formatacao(dados_prontos)
         print("Formatações aplicadas com sucesso! ")
  
