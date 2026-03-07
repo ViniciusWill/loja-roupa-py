@@ -33,17 +33,6 @@ A arquitetura atual utiliza o padrão Service Layer (Camada de Serviços), separ
 = Cadastro de Participantes: Validação rigorosa de tipos para Clientes e Fornecedores.
 
 
-📂 Estrutura de Pastas (Refletindo o Banco)
-loja-roupa-py/
-├── src/
-│   ├── database/           # Repositórios (Queries SQL e comandos ao SQLite)
-│   ├── models/             # Modelos Pydantic (Garantia de tipos)
-│   ├── services/           # Regras de Negócio (Onde a lógica acontece)
-│   └── main.py             # CLI - Interface de linha de comando
-├── data/
-│   └── sistema_loja.db     # O Banco de Dados SQLite
-└── requirements.txt
-
 📈 Roadmap — Próximos Passos
 - Migração para PostgreSQL: Preparar o sistema para ambientes multiusuário.
 - Interface Web (FastAPI): Expor os serviços para uma interface moderna.

@@ -67,8 +67,8 @@ def menu_principal():
                 if opcao_tipo_compra == 1: 
                     print("✅ Compra a vista registrada com sucesso!")
                 if opcao_tipo_compra == 2: 
-                    parcelas = int(input("Insira o numero de parcelas em que o produto sera pago: "))
-                    compra_service.lançamento_compra_parcelada(compra_id=nova_compra_id, valor_unitario=valor_compra, quantidade=qtd, parcelas=parcelas)
+                    parcelas_compra = int(input("Insira o numero de parcelas em que o produto sera pago: "))
+                    compra_service.lançamento_compra_parcelada(compra_id=nova_compra_id, valor_unitario=valor_compra, quantidade=qtd, parcelas=parcelas_compra)
                 print("Compra parcelada registrada!")
 
 
@@ -78,6 +78,7 @@ def menu_principal():
                 print(f"\n❌ ERRO INESPERADO: {e}")
 
         elif opcao == 2:
+       
             try:
                 print("\n--- REGISTRAR VENDA ---")
                 c_id = int(input("ID do Cliente/Participante: "))
@@ -85,11 +86,17 @@ def menu_principal():
                 qtd = int(input("Quantidade: "))
                 preco = float(input("Preço Unitário: "))
 
-                venda_service.realizar_venda(
+                nova_venda_id = venda_service.realizar_venda(
                     cliente_id=c_id, estoque_id=p_id, 
                     quantidade_desejada=qtd, valor_unitario=preco
                 )
-                print("✅ Venda realizada!")
+                opcao_tipo_venda = int(input("A venda realizada foi uma venda a vista ou parcelada? (1. A vista / 2. Parcelada): "))
+                if opcao_tipo_venda == 1:
+                    print("✅ Venda a vista cadastrada com sucesso!")
+                else: 
+                    parcelas_venda = int(input("Insira o numero de parcelas em que o produto sera pago: "))
+                    venda_service.lançamento_venda_parcelada(venda_id=nova_venda_id, valor_unitario=preco, quantidade=qtd, parcelas=parcelas_venda)
+                print("✅ Venda parcelada cadastrada com sucesso!")
             except Exception as e:
                 print(f"\n❌ ERRO NA VENDA: {e}")
 
