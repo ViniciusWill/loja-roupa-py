@@ -21,7 +21,6 @@ class VendasService:
 
         nova_quantidade = produto.quantidade - quantidade_desejada
 
-        # 4. Criar o Modelo (O Pydantic valida os dados aqui)
         nova_venda = Venda(
             cliente_id=cliente_id,
             estoque_id=estoque_id,

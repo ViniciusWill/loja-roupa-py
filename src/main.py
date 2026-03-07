@@ -44,20 +44,34 @@ def menu_principal():
                 if opcao_produto == 1:
                     estoque_id = int(input("ID Produto (Estoque): "))
                     qtd = int(input("Quantidade adquirida: "))
-                    compra_service.lançamento_compra(fornecedor_id=f_id, estoque_id=estoque_id, quantidade=qtd)
+                    nova_compra_id, valor_compra = compra_service.lançamento_compra(
+                        fornecedor_id=f_id,
+                          estoque_id=estoque_id, 
+                          quantidade=qtd)
                 else:
                     nome_produto = input("Nome do produto: ") 
                     tamanho = input("Tamanho: ")
                     qtd = int(input("Quantidade: "))
                     valor_compra = float(input("Valor unitário: "))
-                    
-                    id_novo = estoque_service.registrar_produto_estoque(
+                    id_novo_produto_estoque = estoque_service.registrar_produto_estoque(
                         nome_produto=nome_produto, tamanho=tamanho, 
                         quantidade=qtd, valor_compra=valor_compra
                     )
-                    compra_service.lançamento_compra(fornecedor_id=f_id, estoque_id=id_novo, quantidade=qtd)
-                
-                print("✅ Compra registrada com sucesso!")
+                    nova_compra_id, _ = compra_service.lançamento_compra(
+                        fornecedor_id=f_id, 
+                        estoque_id=id_novo_produto_estoque, 
+                        quantidade=qtd
+                    )
+                print("\n" + "-"*30)
+                opcao_tipo_compra = int(input("A compra realizada foi uma compra a vista ou parcelada? (1. A vista / 2. Parcelada.): "))
+                if opcao_tipo_compra == 1: 
+                    print("✅ Compra a vista registrada com sucesso!")
+                if opcao_tipo_compra == 2: 
+                    parcelas = int(input("Insira o numero de parcelas em que o produto sera pago: "))
+                    compra_service.lançamento_compra_parcelada(compra_id=nova_compra_id, valor_unitario=valor_compra, quantidade=qtd, parcelas=parcelas)
+                print("Compra parcelada registrada!")
+
+
             except ValueError as e:
                 print(f"\n⚠️ ERRO DE VALIDAÇÃO: Verifique se digitou números corretamente.")
             except Exception as e:
