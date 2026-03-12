@@ -1,0 +1,64 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+.menu-item{
+    width: 200;
+    height: 150px;
+    text-decoration-line: none;
+    border-style: solid;
+    color: white;
+    border-width: 3px;
+    margin: auto;
+    font-family:  "open sans", "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+    font-size: 16px;
+    
+}
+#cabeçalho {
+    text-align: center;
+    padding: 5px;
+
+}
+picture > img{
+     width: 50px;
+     height: 50px;
+}
+main > nav{
+     text-align: center;
+}
+
+
+#Venda{
+    background-color: rgb(76, 175, 80);
+}
+
+#Compra{
+    background-color: rgb(28, 124, 226);
+}
+
+#Estoque{
+    background-color: rgb(255, 152, 0);
+}
+
+#ContasPagar{
+    background-color: rgb(244,67,54);
+}
+
+#ContasReceber{
+    background-color: rgb(0,150,136);
+}
+
+#Clientes{
+    background-color: rgb(156,39,176);
+}
+
+#Participantes{
+    background-color: rgb(16, 211, 185);
+}
+
+#Download {
+    background-color: rgb(97, 56, 3);
+}

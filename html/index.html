@@ -4,104 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="estilo/style.css">
     <title>ERP</title>
-    <style>
-<<<<<<< HEAD
-    .menu-item{
-    width: 100px;
-    height: 100px;
-    text-align: center;
-}
-=======
-    h1{
-        text-align: center;
-        background-color:  rgb(9, 63, 63);
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    div{
-        display:  inline-block;
-        border-color:rgb(0, 0, 0);
-        border-width: 3px;
-        border-style: solid
-        ;
-        background-color: rgb(9, 63, 63);
-        font-family:  Arial, Helvetica, sans-serif, 12;
-        text-align: center;
-        width: 200px;
-        height: 200px;
-        margin: 1px;
-    }
-    div:hover{
-        background-color: rgb(17, 121, 121);
-    }
->>>>>>> 88f8f37ffaa68170b3b69597faf162068b5f0218
-
-#Venda{
-    background-color: rgb(76, 175, 80);
-}
-
-#Compra{
-    background-color: rgb(28, 124, 226);
-}
-
-#Estoque{
-    background-color: rgb(255, 152, 0);
-}
-
-#ContasPagar{
-    background-color: rgb(244,67,54);
-}
-
-#ContasReceber{
-    background-color: rgb(0,150,136);
-}
-
-#Clientes{
-    background-color: rgb(156,39,176);
-}
-    /* div > a{ 
-        margin-right: 10px;
-        padding: 10px;   
-        text-decoration: none;
-        color: white;
-    }
-    (156,39,176)
-    div > a:hover{
-        background-color: rgb(17, 121, 121);
-        
-    } */
-    </style>
 </head>
 <body>
-    <header>   
+    <header id="cabeçalho">  
+        <picture>
+            <img src="logo.ico">
+        </picture>
+    </header> 
+
+    <main>
     <nav>
-        <div id="Venda" class="menu-item">
-            <a href="caixa.html" rel="next">Nova Venda</a>
-        </div>
-        <div id="Compra"  class="menu-item">
-            <a href="" rel="next">Nova Compra</a>
-        </div>
-        <div id="Estoque"  class="menu-item">
-        <a href="" rel="next">Meu Estoque</a>
-        </div>
-        <div id="ContasPagar"  class="menu-item">
-        <a href="" rel="next">  Contas a Pagar</a>
-        </div>
-        <div id="ContasReceber"  class="menu-item">
-        <a href="" rel="next">  Contas a Receber</a>
-        </div>
-        <div id="Clientes"  class="menu-item">
-        <a href="" rel="next">  Clientes</a>
-        </div>
-        <div id="Participantes"  class="menu-item">
-        <a href="" rel="next">  Participantes</a>
-        </div>
-        <div>
-        <a href="Controle.xlsx" download="Controle.xlsx" type=application/vnd.ms-excel  class="menu-item"> Baixar Relatorio Semanal</a></li>
-        </ul>
-        </div>
+            <a href="caixa.html" id="Venda" class="menu-item"  rel="next">Nova Venda</a>
+            <a href="" rel="next" id="Compra"  class="menu-item">Nova Compra</a>
+            <a href="" rel="next" id="Estoque"  class="menu-item">Meu Estoque</a>
+            <a href="" rel="next" id="ContasPagar"  class="menu-item">  Contas a Pagar</a>
+            <a href="" rel="next" id="ContasReceber"  class="menu-item">  Contas a Receber</a>
+            <a href="" rel="next" id="Clientes"  class="menu-item">  Clientes</a>
+            <a href="" rel="next" id="Participantes"  class="menu-item">  Participantes</a>
+            <a href="Controle.xlsx" id="Download"   class="menu-item" download="Controle.xlsx" type=application/vnd.ms-excel> Baixar Relatorio Semanal</a>
     </nav>
-    </header>
+    </main>
+   
         
 </body>
 </html>
