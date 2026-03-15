@@ -11,7 +11,8 @@
 }
 #cabecalho {
     text-align: center;
-    padding: 5px;
+    padding-top: 5px;
+    background-color: #333;
 
 }
 .logo-img,
@@ -57,6 +58,42 @@ main {
 .menu-item:hover {
     opacity: 0.85;
 }
+
+
+
+
+
+/* ICONES INTERATIVOS NO rodape*/
+.rodape-icones{
+    position: fixed;  
+    bottom: 0;        
+    left: 0;          
+    width: 100%;      
+    padding: 5px;
+    background-color: #333;
+}
+
+.icones-interativos-form{
+    width: 20px;
+    height: 20px;
+    padding-bottom: 1px;
+}
+.menu-icones-interativos{
+    display: grid;
+    grid-template-columns: repeat(7, 50px); 
+    gap: 2px;
+    text-align: center;
+}
+
+.icones-interativos{
+    border: 3px solid rgb(0, 0, 0);
+    border-radius: 10px;
+}
+.icones-interativos:hover {
+    opacity: 0.85;
+}
+
+
 
 #venda{background-color: rgb(76, 175, 80);}
 #compra{background-color: rgb(28, 124, 226);}
