@@ -11,21 +11,59 @@
 }
 #cabecalho {
     text-align: center;
-    padding-top: 5px;
     background-color: #333;
-
+    
 }
 .logo-img,
 .icones{
     width: 50px;
-    height: 80px;
-    padding-bottom: 30px;
+    height: 50px;
 }
-main {
+.main {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 80vh; 
+
+}
+.formulario {
+    font-family: "Poppins", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: rgb(0, 0, 0);
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+    border-radius: 10px;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.formulario p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    width: 100%;
+    justify-content: space-between; 
+}
+
+.formulario input[type="text"],
+.formulario input[type="date"] {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+}
+
+.formulario input[type="submit"] {
+    margin-top: 8px;
+    padding: 8px 24px;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid black;
+    font-family: inherit;
 }
 .menu-nav {
     display: grid;
@@ -60,9 +98,6 @@ main {
 }
 
 
-
-
-
 /* ICONES INTERATIVOS NO rodape*/
 .rodape-icones{
     position: fixed;  
@@ -94,7 +129,7 @@ main {
 }
 
 
-
+#inicio{background-color:rgb(255, 255, 255);}
 #venda{background-color: rgb(76, 175, 80);}
 #compra{background-color: rgb(28, 124, 226);}
 #estoque{background-color: rgb(255, 152, 0);}
