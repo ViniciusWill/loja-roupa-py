@@ -1,5 +1,5 @@
-from src.database.estoque_repository import EstoqueRepository
-from src.models.Estoque_model import Estoque
+from app.database.estoque_repository import EstoqueRepository
+from app.models.Estoque_model import Estoque
 
 class EstoqueService: 
     def __init__(self):

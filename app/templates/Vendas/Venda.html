@@ -1,19 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="logo.ico" type="image/x-icon">
-    <link rel="stylesheet" href="estilo/style.css">
-    <title>Nova Venda</title>
-</head>
-<body>
-   <header id="cabecalho">  
-        <picture>
-            <img class="logo-img" src="imagens/venda.png" alt="Logo ERP">
-        </picture>
-   </header>
-<main class="main">
+{% extends "base.html" %}
+
+{% block title %}Nova Venda{% endblock %}
+
+{% block content %}
+<div>
     <form class="formulario">
      <p>
         <label for="cliente">Cliente:</label>
@@ -39,45 +29,5 @@
             <input type="submit" value="Registrar Venda">
     </p>
     </form>
-</main>
-    <footer class="rodape-icones">
-        <nav class="menu-icones-interativos">
-            <div class="icones-interativos" id="inicio">
-                <a href="index.html" rel="previous">
-                    <img class="icones-interativos-form" src="logo.ico">
-                </a>
-            </div>
-            <div class="icones-interativos" id="compra">
-                <a href="Compra.html" rel="previous">
-                    <img class="icones-interativos-form" src="imagens/compra.png">
-                </a>
-            </div>
-            <div class="icones-interativos" id="estoque">
-                <a href="Estoque.html" rel="previous">
-                    <img class="icones-interativos-form" src="imagens/estoque.png">
-                </a>
-            </div>
-           <div class="icones-interativos" id="contas-pagar">
-                <a href="ContasPagar.html" rel="previous">
-                    <img class="icones-interativos-form" src="imagens/pagar.png">
-                </a>
-            </div>
-            <div class="icones-interativos" id="contas-receber">
-                <a href="ContasReceber.html" rel="previous">
-                    <img class="icones-interativos-form" src="imagens/receber.png">
-                </a>
-            </div>
-            <div class="icones-interativos" id="participantes">
-                <a href="Participantes.html" rel="previous">
-                    <img class="icones-interativos-form" src="imagens/participantes.png">             
-                </a>
-            </div>
-            <div class="icones-interativos" id="clientes">
-                <a href="Clientes.html" rel="previous">
-                    <img class="icones-interativos-form" src="imagens/Clientes.png">                
-                </a>
-            </div>
-        </nav>
-    </footer>
-</body>
-</html>
+</div>
+{% endblock %}

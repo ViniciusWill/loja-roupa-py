@@ -4,7 +4,7 @@ from pathlib import Path
 
 class BaseRepository:
     def __init__(self):
-       self.caminho_db = Path(r"C:\Users\vinicius.gomes\Desktop\py\loja-roupa-py\dados\sistema_loja.db") 
+       self.caminho_db = Path(__file__).parent.parent.parent / "dados" / "sistema_loja.db"
     
     def __conection__(self):
         conn = sqlite3.connect(self.caminho_db)

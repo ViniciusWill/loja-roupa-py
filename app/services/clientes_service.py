@@ -1,5 +1,5 @@
-from src.database.Clientes_repository import ClienteRepository
-from src.models.Clientes_model import Cliente
+from app.database.Clientes_repository import ClienteRepository
+from app.models.Clientes_model import Cliente
 
 
 class ClienteService:

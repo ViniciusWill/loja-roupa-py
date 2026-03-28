@@ -1,5 +1,5 @@
 from .base_repository import BaseRepository
-from src.models.Estoque_model import Estoque 
+from app.models.Estoque_model import Estoque 
 
 
 class EstoqueRepository(BaseRepository):

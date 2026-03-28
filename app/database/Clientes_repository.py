@@ -1,4 +1,4 @@
-from src.models.Clientes_model import Cliente
+from app.models.Clientes_model import Cliente
 from .base_repository import BaseRepository
 
 class ClienteRepository(BaseRepository):

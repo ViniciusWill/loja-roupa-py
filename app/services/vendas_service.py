@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from src.models.Vendas_model import Venda, ContaReceber
-from src.database.Vendas_repository import VendaRepository
-from src.database.estoque_repository import EstoqueRepository
+from app.models.Vendas_model import Venda, ContaReceber
+from app.database.Vendas_repository import VendaRepository
+from app.database.estoque_repository import EstoqueRepository
 
 class VendasService:
     def __init__(self):

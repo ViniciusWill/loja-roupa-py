@@ -1,5 +1,5 @@
 from .base_repository import BaseRepository
-from src.models.Vendas_model import Venda, ContaReceber 
+from app.models.Vendas_model import Venda, ContaReceber 
 
 class VendaRepository(BaseRepository):
     def LançamentoVenda(self, venda: Venda, nova_qtd_estoque: int):

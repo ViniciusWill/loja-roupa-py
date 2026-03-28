@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='imagens/logo.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>{% block title %}Loja{% endblock %}</title>
+</head>
+<body>
+
+    <header id="cabecalho">
+        <picture>
+            <img class="logo-img" src="{{ url_for('static', filename=logo_header) }}" alt="Logo ERP">
+        </picture>
+    </header>
+
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block rodape %}
+    <footer class="rodape-icones">
+        <nav class="menu-icones-interativos">
+
+            {% if request.endpoint != 'index' %}
+            <a href="{{ url_for('index') }}">
+                <div class="icones-interativos" id="inicio">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/logo.ico') }}">
+                </div>
+            </a>
+            {% endif %}
+
+            {% if request.endpoint != 'vendas' %}
+            <a href="{{ url_for('vendas') }}">
+                <div class="icones-interativos" id="venda">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/venda.png') }}">
+                </div>
+            </a>
+            {% endif %}
+
+            {% if request.endpoint != 'compras' %}
+            <a href="{{ url_for('compras') }}">
+                <div class="icones-interativos" id="compra">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/compra.png') }}">
+                </div>
+            </a>
+            {% endif %}
+
+            {% if request.endpoint != 'estoque' %}
+            <a href="{{ url_for('estoque') }}">
+                <div class="icones-interativos" id="estoque">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/estoque.png') }}">
+                </div>
+            </a>
+            {% endif %}
+
+            {% if request.endpoint != 'contas_pagar' %}
+            <a href="{{ url_for('contas_pagar') }}">
+                <div class="icones-interativos" id="contas_pagar">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/pagar.png') }}">
+                </div>
+            </a>
+            {% endif %}
+
+            {% if request.endpoint != 'contas_receber' %}
+            <a href="{{ url_for('contas_receber') }}">
+                <div class="icones-interativos" id="contas_receber">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/receber.png') }}">
+                </div>
+            </a>
+            {% endif %}
+
+            {% if request.endpoint != 'clientes' %}
+            <a href="{{ url_for('clientes') }}">
+                <div class="icones-interativos" id="clientes">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/Clientes.png') }}">
+                </div>
+            </a>
+            {% endif %}
+
+            {% if request.endpoint != 'participantes' %}
+            <a href="{{ url_for('participantes') }}">
+                <div class="icones-interativos" id="participantes">
+                    <img class="icones-interativos-form" src="{{ url_for('static', filename='imagens/participantes.png') }}">
+                </div>
+            </a>
+            {% endif %}
+
+        </nav>
+    </footer>
+    {% endblock %}
+
+</body>
+</html>

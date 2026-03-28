@@ -1,82 +1,45 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="../static/imagens/logo.ico" type="image/x-icon">
-        <link rel="stylesheet" href="../static/css/style.css">
-        <title>Nova Compra</title>
-    </head>
-    <body>
-        <header id="cabecalho">  
-            <picture>
-                <img class="logo-img" src="../static/imagens/compra.png" alt="Logo ERP">
-            </picture>
-        </header>
-    <main class= "main">
-        <form class="formulario">
-            <p>
-                <label for="partic">Participante: </label>
-                    <input type="text" name="Participante" id="partic">
-            </p>
-            <p>
-                <label for="codigoprod">Codigo do Produto: </label> 
-                    <input type="text" name="Codigo-do-Produto" id="codigoprod">
-            </p>
-            <p>
-                <label for="qntcom">Quantidade: </label>
-                    <input type="text" name="Quantidade-comp" id="qntcom">
-            </p>
-            <p>
-                <label for="forpag">Forma de Pagamento: </label>
-                    <input type="text" name="Form-pag" id="forpag">
-            </p>
-            <p>
-                <label for="datacom">Data da Compra: </label>
-                    <input type="date" name="Data-com" id="datacom">
-            </p>
-            <p>
-                    <input type="submit" value="Registrar Compra"></p>
-        </form>
-    </main>
-        <footer class="rodape-icones">
-            <nav class="menu-icones-interativos">
-                <a href="../index.html" rel="previous">
-                    <div class="icones-interativos" id="inicio">
-                        <img class="icones-interativos-form" src="../static/imagens/logo.ico">
-                    </div>
-                </a>
-                <a href="../Vendas/Venda.html" rel="previous">
-                    <div class="icones-interativos" id="venda">
-                        <img class="icones-interativos-form" src="../static/imagens/venda.png">
-                    </div>
-                </a>
-                <a href="../Estoque/Estoque.html" rel="previous">
-                    <div class="icones-interativos" id="estoque">
-                        <img class="icones-interativos-form" src="../static/imagens/estoque.png">
-                    </div>
-                </a>
-                <a href="../Financeiro/ContasPagar.html" rel="previous">
-                    <div class="icones-interativos" id="contas-pagar">
-                        <img class="icones-interativos-form" src="../static/imagens/pagar.png">
-                    </div>
-                </a>
-                <a href="../Financeiro/ContasReceber.html" rel="previous">
-                    <div class="icones-interativos" id="contas-receber">
-                        <img class="icones-interativos-form" src="../static/imagens/receber.png">
-                    </div>
-                </a>
-                <a href="../Participantes/Participantes.html" rel="previous">
-                    <div class="icones-interativos" id="participantes">
-                        <img class="icones-interativos-form" src="../static/imagens/participantes.png">             
-                    </div>
-                </a>
-                <a href="../Clientes/Clientes.html" rel="previous">
-                    <div class="icones-interativos" id="clientes">
-                         <img class="icones-interativos-form" src="../static/imagens/Clientes.png">                
-                    </div>
-                </a>
-            </nav>
-        </footer>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Nova Compra{% endblock %}
+
+{% block content %}
+<div>
+    <form class="formulario" action="{{ url_for('compras') }}" method="POST">
+
+        <p>
+            <label for="fornecedor_id">Participante:</label>
+            <select name="fornecedor_id" id="fornecedor_id" required>
+                <option value="">Selecione</option>
+                {% for p in participantes %}
+                    <option value="{{ p.id }}">{{ p.nome }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>
+            <label for="estoque_id">Produto:</label>
+            <select name="estoque_id" id="estoque_id" required>
+                <option value="">Selecione</option>
+                {% for produto in produtos %}
+                    <option value="{{ produto.id }}">{{ produto.nome_produto }} — {{ produto.tamanho }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>
+            <label for="qntcom">Quantidade:</label>
+            <input type="number" name="quantidade" id="qntcom" min="1" required>
+        </p>
+
+        <p>
+            <label for="parcelas">Parcelas:</label>
+            <input type="number" name="parcelas" id="parcelas" min="1" value="1" required>
+        </p>
+
+        <p>
+            <input type="submit" value="Registrar Compra">
+        </p>
+
+    </form>
+</div>
+{% endblock %}

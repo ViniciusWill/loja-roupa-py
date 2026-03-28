@@ -1,5 +1,5 @@
-from src.database.Participantes_repository import ParticipantesRepository
-from src.models.Participantes_model import Participante
+from app.database.Participantes_repository import ParticipantesRepository
+from app.models.Participantes_model import Participante
 
 
 class ParticipanteService:

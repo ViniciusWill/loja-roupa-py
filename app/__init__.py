@@ -1,38 +1,93 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash
+from app.services.compras_service import CompraService
+from app.database.estoque_repository import EstoqueRepository
+from app.database.Participantes_repository import ParticipantesRepository
 
 def create_app():
     app = Flask(__name__)
+    app.secret_key = "loja-roupa-key"
 
     @app.route("/")
     def index():
-        return render_template("index.html")
+        return render_template("index.html", logo_header="imagens/logo.ico")
 
     @app.route("/vendas")
     def vendas():
-        return render_template("vendas/venda.html")
+        return render_template("vendas/venda.html", logo_header="imagens/venda.png")
 
-    @app.route("/compras")
+    @app.route("/compras", methods=["GET", "POST"])
     def compras():
-        return render_template("compras/compra.html")
+        estoque_repo       = EstoqueRepository()
+        participantes_repo = ParticipantesRepository()
+
+        if request.method == "POST":
+            try:
+                fornecedor_id = int(request.form.get("fornecedor_id"))
+                estoque_id    = int(request.form.get("estoque_id"))
+                quantidade    = int(request.form.get("quantidade"))
+                parcelas      = int(request.form.get("parcelas"))
+
+                service = CompraService()
+                id_compra, valor_unitario = service.lançamento_compra(
+                    fornecedor_id=fornecedor_id,
+                    estoque_id=estoque_id,
+                    quantidade=quantidade
+                )
+
+                if parcelas > 1:
+                    service.lançamento_compra_parcelada(
+                        compra_id=id_compra,
+                        valor_unitario=valor_unitario,
+                        quantidade=quantidade,
+                        parcelas=parcelas
+                    )
+
+                flash("Compra lançada com sucesso!", "sucesso")
+                return redirect(url_for("compras"))
+
+            except Exception as e:
+                flash(f"Erro ao lançar compra: {str(e)}", "erro")
+
+        produtos      = estoque_repo.buscar_todos()
+        participantes = participantes_repo.buscar_todos()
+
+        return render_template("compras/compra.html",
+                               logo_header="imagens/compra.png",
+                               produtos=produtos,
+                               participantes=participantes)
 
     @app.route("/estoque")
     def estoque():
-        return render_template("estoque/estoque.html")
+        estoque_repo = EstoqueRepository()
+        produtos = estoque_repo.buscar_todos()
 
-    @app.route("/Financeiro/contas_pagar")
+        total_itens    = len(produtos)
+        estoque_baixo  = sum(1 for p in produtos if 0 < p.quantidade <= 5)
+        estoque_zerado = sum(1 for p in produtos if p.quantidade <= 0)
+
+        return render_template(
+            "estoque/estoque.html",
+            logo_header="imagens/estoque.png",
+            produtos=produtos,
+            total_itens=total_itens,
+            estoque_baixo=estoque_baixo,
+            estoque_zerado=estoque_zerado,
+        )
+
+    @app.route("/financeiro/contas_pagar")
     def contas_pagar():
-        return render_template("Financeiro/ContasPagar.html")
+        return render_template("Financeiro/ContasPagar.html", logo_header="imagens/pagar.png")
 
-    @app.route("/Financeiro/contas_receber")
+    @app.route("/financeiro/contas_receber")
     def contas_receber():
-        return render_template("Financeiro/ContasReceber.html")
+        return render_template("Financeiro/ContasReceber.html", logo_header="imagens/receber.png")
 
     @app.route("/clientes")
     def clientes():
-        return render_template("clientes/clientes.html")
+        return render_template("clientes/clientes.html", logo_header="imagens/Clientes.png")
 
     @app.route("/participantes")
     def participantes():
-        return render_template("participantes/participantes.html")
+        return render_template("participantes/participantes.html", logo_header="imagens/participantes.png")
 
     return app
