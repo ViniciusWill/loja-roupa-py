@@ -70,7 +70,7 @@
                         <td class="col-preco {% if conta.valor_pendente > 0 %}qtd-baixo{% endif %}">
                             {{ "%.2f"|format(conta.valor_pendente) }}
                         </td>
-                        <td class="col-produto">{{ conta.data_vencimento }}</td>
+                        <td class="col-produto">{{ conta.data_vencimento.strftime('%d/%m/%Y') }}</td>
                         <td>
                             <span class="badge badge--{{ status }}">{{ status_label }}</span>
                         </td>
