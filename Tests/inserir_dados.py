@@ -12,17 +12,17 @@ def popular_banco():
     try:
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
-        print("Conectado ao banco para inserção...")
+        print("Conectando ao banco para inserção...")
 
-        # 1. Inserir Participantes (Fornecedores)
-        cur.execute("INSERT INTO \"Participantes\" (nome) VALUES ('Fornecedor Alpha') RETURNING id")
+        # 1. Inserir Participantes (tudo em minúsculo e sem aspas)
+        cur.execute("INSERT INTO participantes (nome) VALUES ('Fornecedor Alpha') RETURNING id")
         fornecedor_id = cur.fetchone()[0]
 
         # 2. Inserir Clientes
         cur.execute("INSERT INTO clientes (nome) VALUES ('João Silva') RETURNING id")
         cliente_id = cur.fetchone()[0]
 
-        # 3. Inserir Estoque (Produtos)
+        # 3. Inserir Estoque
         cur.execute("""
             INSERT INTO estoque (nome_produto, tamanho, quantidade, valor_compra) 
             VALUES ('Camiseta Polo', 'G', 50, 25.50) RETURNING id
@@ -30,17 +30,18 @@ def popular_banco():
         produto_id = cur.fetchone()[0]
 
         # 4. Inserir uma Compra
+        # Nota: as colunas também costumam ficar em minúsculas, então mudei "Data_Compra" para "data_compra"
         cur.execute("""
-            INSERT INTO compras (estoque_id, fornecedor_id, quantidade, valor_unitario, "Data_Compra") 
+            INSERT INTO compras (estoque_id, fornecedor_id, quantidade, valor_unitario, data_compra) 
             VALUES (%s, %s, 10, 20.00, %s) RETURNING id
         """, (produto_id, fornecedor_id, datetime.now()))
         compra_id = cur.fetchone()[0]
 
         # 5. Inserir uma Conta a Pagar
         cur.execute("""
-            INSERT INTO "Contas_a_pagar" (compra_id, parcela, valor_parcela, valor_pendente, data_vencimento) 
-            VALUES (%s, 1, 200.00, 200.00, 20241231)
-        """, (compra_id,))
+            INSERT INTO contas_a_pagar (compra_id, parcela, valor_parcela, valor_pendente, data_vencimento) 
+            VALUES (%s, 1, 200.00, 200.00, %s)
+        """, (compra_id, datetime.now() + timedelta(days=30)))
 
         # 6. Inserir uma Venda
         cur.execute("""
@@ -51,7 +52,7 @@ def popular_banco():
 
         # 7. Inserir uma Conta a Receber
         cur.execute("""
-            INSERT INTO "Contas_a_receber" (venda_id, parcela, valor_parcela, valor_pendente, data_vencimento) 
+            INSERT INTO contas_a_receber (venda_id, parcela, valor_parcela, valor_pendente, data_vencimento) 
             VALUES (%s, 1, 160.00, 160.00, %s)
         """, (venda_id, datetime.now() + timedelta(days=30)))
 
@@ -61,7 +62,7 @@ def popular_banco():
     except Exception as e:
         print(f"Erro ao inserir dados: {e}")
     finally:
-        if conn:
+        if 'conn' in locals() and conn:
             cur.close()
             conn.close()
 
