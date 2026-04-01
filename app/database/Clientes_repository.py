@@ -2,30 +2,18 @@ from app.models.Clientes_model import Cliente
 from .base_repository import BaseRepository
 
 class ClienteRepository(BaseRepository):
-    
-    def salvar(self, cliente: Cliente):
-        conn = self.__conection__()
-        
-        try:
-            with conn: 
-                cur = conn.cursor()
-                query = "INSERT INTO clientes (nome) VALUES (?)"
-                
-                if self.db_url:
-                    query = query.replace("?", "%s")
-                    
-                cur.execute(query, (cliente.nome,))
-                
-        finally:
-            conn.close()
+    def salvar(self, cliente):
+        query = "INSERT INTO clientes (nome) VALUES (?)"
+        query = query.replace("?", "%s") 
+        self.executar_comando(query, (cliente.nome,))
 
     def buscar_todos(self):
-        conn = self.__conection__()
-        try:
-            cur = conn.cursor()
-            query = "SELECT * FROM clientes"
-            cur.execute(query)
-            rows = cur.fetchall()
-            return [{"id": row["id"], "nome": row["nome"]} for row in rows]
-        finally:
-            conn.close()
+        query = "SELECT * FROM clientes"
+        rows = self.executar_select(query)
+        return [{"id": row["id"], "nome": row["nome"]} for row in rows]
+
+    def buscar_por_id(self, cliente_id):
+        query = "SELECT * FROM clientes WHERE id = ?"
+        query = query.replace("?", "%s") 
+        rows = self.executar_select(query, (cliente_id,))
+        return rows[0] if rows else None
