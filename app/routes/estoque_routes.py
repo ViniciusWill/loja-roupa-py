@@ -12,7 +12,7 @@ def estoque():
         estoque_zerado = sum(1 for p in produtos if p.quantidade <= 0)
 
         return render_template(
-            "estoque/estoque.html",
+            "Estoque/Estoque.html",
             logo_header="imagens/estoque.png",
             produtos=produtos,
             total_itens=total_itens,
