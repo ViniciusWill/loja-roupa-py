@@ -1,59 +1,174 @@
- Sistema ERP para Gestão de Loja de Roupas 
+# Sistema ERP para Loja de Roupas
 
-📝 Descrição
-Sistema de gestão operacional e financeiro para varejo, desenvolvido em Python com foco absoluto em usabilidade, integridade de dados e acessibilidade.
+Aplicacao web em Flask para controle operacional e financeiro de uma loja de roupas.
 
-O projeto foi idealizado especificamente para o microempreendedor brasileiro, visando democratizar o controle profissional de pequenos negócios através de uma ferramenta intuitiva. O objetivo é remover as barreiras tecnológicas para quem precisa gerenciar vendas, estoque e finanças, mas não possui familiaridade com softwares complexos ou planilhas confusas.
+O sistema cobre:
+- vendas
+- compras
+- estoque
+- clientes
+- participantes/fornecedores
+- contas a pagar
+- contas a receber
+- relatorios
 
+## Requisitos
+- Python 3.13 ou superior
+- `pip`
 
-🚀 Evolução e Arquitetura
-O sistema nasceu como uma ferramenta de automação e validação de dados utilizando Pandas e Excel, evoluindo para uma aplicação robusta com persistência em banco de dados relacional SQLite.
+Opcional:
+- PostgreSQL, se voce quiser rodar com banco externo
 
-A arquitetura atual utiliza o padrão Service Layer (Camada de Serviços), separando as regras de negócio da persistência de dados (Repositories). Isso garante:
- - Baixa curva de aprendizado: Interface interativa e guiada, pensada no fluxo de trabalho real do lojista.
- - Confiabilidade: Validação rigorosa de tipos e dados com Pydantic, evitando erros de digitação comuns no dia a dia.
- - Escalabilidade: Estrutura profissional preparada para expansão e migração para outros bancos de dados.
+## Como um usuario externo pode usar o sistema
 
-✨ Diferenciais para o Microempreendedor
-- Segurança de Dados: Diferente do Excel, onde registros podem ser apagados acidentalmente, o uso do SQLite garante a integridade histórica dos lançamentos.
-- Validação Inteligente: O sistema impede entradas inválidas (como letras em campos de valor), reduzindo drasticamente o retrabalho financeiro.
-- Processos Simplificados: Fluxos de compra e venda que automatizam o cálculo de estoque de forma transparente.
-
-
-🛠️ Tecnologias Utilizadas
-- Python 3.13+: Linguagem core.
-- SQLite3: Banco de dados relacional embutido para persistência local.
-- Pydantic: Validação de esquemas e entidades.
-
-
-⚙️ Funcionalidades Implementadas
-- Persistência Relacional: Dados armazenados de forma estruturada em tabelas SQL.
-- Gestão de Compras: Fluxo que valida a existência de produtos no estoque via ID.
-- Gestão de Vendas: Baixa automática em estoque e registro de transações financeiras.
-= Cadastro de Participantes: Validação rigorosa de tipos para Clientes e Fornecedores.
-
-
-📈 Roadmap — Próximos Passos
-- Migração para PostgreSQL: Preparar o sistema para ambientes multiusuário.
-- Interface Web (FastAPI): Expor os serviços para uma interface moderna.
-- Relatórios Financeiros: Geração de PDFs com fechamento de caixa mensal.
-- Autenticação: Sistema de login para diferentes níveis de acesso.
-
-
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-🚀 Como Executar
-- Clonar e Acessar:
+### 1. Clonar o projeto
+```bash
 git clone <url-do-repositorio>
 cd loja-roupa-py
+```
 
-- Ambiente Virtual:
+### 2. Criar e ativar um ambiente virtual
+
+Windows PowerShell:
+```powershell
 python -m venv venv
-./venv/Scripts/activate  # Windows
+.\venv\Scripts\Activate.ps1
+```
 
-- Instalar Dependências:
+Windows CMD:
+```bat
+python -m venv venv
+venv\Scripts\activate.bat
+```
+
+Linux/macOS:
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+### 3. Instalar as dependencias
+```bash
 pip install -r requirements.txt
+```
 
-- Rodar o Sistema:
-python src/main.py
+## Configuracao do banco
+
+O projeto funciona de duas formas:
+
+### Opcao A: uso local com SQLite
+Nao precisa configurar nada.
+
+Se a variavel `DATABASE_URL` nao existir, o sistema cria e usa automaticamente o arquivo local:
+
+`dados/sistema_loja.db`
+
+### Opcao B: uso com PostgreSQL
+Defina a variavel de ambiente `DATABASE_URL` antes de iniciar a aplicacao.
+
+Exemplo:
+```bash
+DATABASE_URL=postgresql://usuario:senha@host:5432/banco
+```
+
+No Windows PowerShell:
+```powershell
+$env:DATABASE_URL="postgresql://usuario:senha@host:5432/banco"
+```
+
+## Inicializacao do sistema
+
+### 4. Criar as tabelas
+```bash
+python app/database/setup_db.py
+```
+
+### 5. Inserir dados iniciais de exemplo
+```bash
+python Tests/inserir_dados.py
+```
+
+Esse script pode ser executado mais de uma vez sem duplicar os registros principais.
+
+## Executar a aplicacao
+
+### 6. Rodar localmente
+```bash
+python run.py
+```
+
+Por padrao, a aplicacao sobe em ambiente local com debug habilitado.
+
+Depois disso, acesse:
+
+`http://127.0.0.1:5000`
+
+## Fluxo recomendado para primeiro uso
+
+Depois de abrir o sistema no navegador:
+
+1. Acesse a tela inicial
+2. Verifique se existem registros em Clientes e Participantes
+3. Verifique se existe ao menos um produto em Estoque
+4. Teste um lancamento em Vendas
+5. Teste um lancamento em Compras
+6. Consulte Contas a Pagar, Contas a Receber e Relatorios
+
+Se voce executou `Tests/inserir_dados.py`, o sistema ja cria uma base minima para navegacao.
+
+## Deploy
+
+O projeto pode ser publicado em plataformas como Render.
+
+Fluxo recomendado de deploy:
+
+1. configurar a variavel `DATABASE_URL` no ambiente, se usar PostgreSQL
+2. instalar dependencias com `pip install -r requirements.txt`
+3. executar a criacao das tabelas:
+   `python app/database/setup_db.py`
+4. opcionalmente inserir dados iniciais:
+   `python Tests/inserir_dados.py`
+5. iniciar o servidor WSGI:
+   `gunicorn run:app`
+
+Comando de start completo:
+```bash
+python app/database/setup_db.py && python Tests/inserir_dados.py && gunicorn run:app
+```
+
+## Estrutura principal do projeto
+
+```text
+app/
+  database/    acesso ao banco e repositories
+  models/      entidades e validacoes
+  routes/      blueprints e rotas da aplicacao
+  services/    regras de negocio
+  static/      css, js e imagens
+  templates/   paginas HTML
+Tests/
+  inserir_dados.py
+  test_post_routes.py
+run.py
+```
+
+## Testes
+
+Para rodar os testes principais de POST:
+```bash
+pytest Tests/test_post_routes.py -q -p no:cacheprovider
+```
+
+## Observacoes importantes
+
+- O projeto usa nomes de arquivos sensiveis a maiusculas/minusculas em ambiente Linux.
+- Em producao, nao exponha a `DATABASE_URL` em logs.
+- Para ambiente local, o SQLite e suficiente para avaliacao e testes iniciais.
+
+## Status atual
+
+O projeto esta organizado em:
+- blueprints para rotas
+- service layer para regras de negocio
+- repositories para persistencia
+- suporte a SQLite e PostgreSQL

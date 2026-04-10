@@ -23,8 +23,8 @@
 
     <!-- Abas -->
     <div class="relatorios-abas">
-        <button class="aba-btn ativa" onclick="trocarAba('vendas', this)">Vendas</button>
-        <button class="aba-btn"       onclick="trocarAba('compras', this)">Compras</button>
+        <button class="aba-btn ativa" data-aba="vendas">Vendas</button>
+        <button class="aba-btn" data-aba="compras">Compras</button>
     </div>
 
     <!-- Painel Vendas -->
@@ -32,8 +32,12 @@
         <div class="relatorios-tabela-wrapper">
 
             <div class="relatorios-controles" style="padding: 10px 14px 0 14px;">
-                <input type="text" class="relatorios-busca" placeholder="Buscar venda..."
-                       onkeyup="filtrar('tabelaVendas', this.value)">
+                <input
+                    type="text"
+                    class="relatorios-busca"
+                    placeholder="Buscar venda..."
+                    data-tabela-alvo="tabelaVendas"
+                >
             </div>
 
             <table class="relatorios-tabela" id="tabelaVendas">
@@ -77,8 +81,12 @@
         <div class="relatorios-tabela-wrapper">
 
             <div class="relatorios-controles" style="padding: 10px 14px 0 14px;">
-                <input type="text" class="relatorios-busca" placeholder="Buscar compra..."
-                       onkeyup="filtrar('tabelaCompras', this.value)">
+                <input
+                    type="text"
+                    class="relatorios-busca"
+                    placeholder="Buscar compra..."
+                    data-tabela-alvo="tabelaCompras"
+                >
             </div>
 
             <table class="relatorios-tabela" id="tabelaCompras">
@@ -119,21 +127,6 @@
 
 </div>
 
-<script>
-function trocarAba(nome, btn) {
-    document.querySelectorAll('.aba-painel').forEach(p => p.classList.remove('ativa'));
-    document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
-    document.getElementById('aba-' + nome).classList.add('ativa');
-    btn.classList.add('ativa');
-}
-
-function filtrar(tabelaId, termo) {
-    const linhas = document.querySelectorAll('#' + tabelaId + ' tbody tr');
-    termo = termo.toLowerCase();
-    linhas.forEach(tr => {
-        tr.classList.toggle('linha-oculta', !tr.textContent.toLowerCase().includes(termo));
-    });
-}
-</script>
+<script src="{{ url_for('static', filename='js/relatorios.js') }}"></script>
 
 {% endblock %}

@@ -6,10 +6,6 @@ class ClienteService:
     def __init__(self):
         self.cliente_repo = ClienteRepository()
 
-    def LançamentoClienteCamposObrigatorios(self, nome: str):
-        try:    
-            novo_cliente = Cliente(nome=nome)
-            self.cliente_repo.salvar(novo_cliente)
-        except Exception as e: 
-           raise e
-            
+    def lancamento_cliente(self, nome: str):
+        novo_cliente = Cliente(nome=nome)
+        self.cliente_repo.salvar(novo_cliente)

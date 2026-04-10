@@ -6,10 +6,6 @@ class ParticipanteService:
     def __init__(self):
         self.participante_repo = ParticipantesRepository()
 
-    def LançamentoParticipanteCampoObrigatorio(self, nome: str):
-        try:    
-            novo_participante = Participante(nome=nome)
-            self.participante_repo.LançamentoParticipanteCampoObrigatorio(novo_participante)
-        except Exception as e: 
-           raise e
-            
+    def lancamento_participante(self, nome: str):
+        novo_participante = Participante(nome=nome)
+        self.participante_repo.lancamento_participante(novo_participante)
